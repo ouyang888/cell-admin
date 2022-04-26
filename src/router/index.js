@@ -35,18 +35,84 @@ const routes = [
             {
                 path: 'index',
                 name: 'index',
-                component: () => import('@/views/center/index.vue')
+                component: () => import('@/views/center/index/index.vue')
             },
             {
-                path: 'user',
-                name: 'user',
-                component: () => import('@/views/center/user/userList.vue')
+                path: 'management',
+                name: 'management',
+                component: () => import('@/views/center/management/management.vue')
+            },
+            {
+                path: 'userList',
+                name: 'userList',
+                meta: {
+                    preMenuUrl: "/center/userManagement"
+                },
+                component: () => import('@/views/center/userManagement/userList.vue')
+            },
+            {
+                path: 'distribution',
+                name: 'distribution',
+                meta: {
+                    preMenuUrl: "/center/userManagement"
+                },
+                component: () => import('@/views/center/userManagement/distribution.vue')
+            },
+            {
+                path: 'sampleList',
+                name: 'sampleList',
+                meta: {
+                    preMenuUrl: "/center/sample"
+                },
+                component: () => import('@/views/center/sample/sampleList.vue')
+            },
+            {
+                path: 'classified',
+                name: 'classified',
+                meta: {
+                    preMenuUrl: "/center/sample"
+                },
+                component: () => import('@/views/center/sample/classified.vue')
+            },
+            {
+                path: 'brand',
+                name: 'brand',
+                component: () => import('@/views/center/brand/brand.vue')
+            },
+            {
+                path: 'filingSheet',
+                name: 'filingSheet',
+                component: () => import('@/views/center/filingSheet/filingSheet.vue')
+            },
+            {
+                path: 'saleList',
+                name: 'saleList',
+                meta: {
+                    preMenuUrl: "/center/sale"
+                },
+                component: () => import('@/views/center/sale/saleList.vue')
+            },
+            {
+                path: 'saleList',
+                name: 'saleList',
+                meta: {
+                    preMenuUrl: "/center/sale"
+                },
+                component: () => import('@/views/center/sale/saleList.vue')
+            },
+            {
+                path: 'saleChannel',
+                name: 'saleChannel',
+                meta: {
+                    preMenuUrl: "/center/sale"
+                },
+                component: () => import('@/views/center/sale/saleChannel.vue')
             },
         ]
     }]
-    const router = new VueRouter({
-        routes
-    })
+const router = new VueRouter({
+    routes
+})
 /**
  * 路由守卫
  */
@@ -59,26 +125,26 @@ router.beforeEach(async (to, from, next) => {
     //             return
     //         }
     //     }
-    if (to.meta.permission) {
-        let sign = false
-        if (to.meta.permission instanceof Array) {
-            to.meta.permission.forEach(item => {
-                if (authoritys.indexOf(item) >= 0) {
-                    sign = true
-                }
-            })
-        } else if (authoritys.indexOf(to.meta.permission) > -1) sign = true
+    // if (to.meta.permission) {
+    //     let sign = false
+    //     if (to.meta.permission instanceof Array) {
+    //         to.meta.permission.forEach(item => {
+    //             if (authoritys.indexOf(item) >= 0) {
+    //                 sign = true
+    //             }
+    //         })
+    //     } else if (authoritys.indexOf(to.meta.permission) > -1) sign = true
 
-        if (!sign) {
-            // if (to.name == 'login') {
-            //     console.log("进入coupon权限不足");
-            //     // next('/login');
-            // } else {
-            console.log('权限不足')
-            // }
-            return;
-        }
-    }
+    //     if (!sign) {
+    //         // if (to.name == 'login') {
+    //         //     console.log("进入coupon权限不足");
+    //         //     // next('/login');
+    //         // } else {
+    //         console.log('权限不足')
+    //         // }
+    //         return;
+    //     }
+    // }
     // }
     next();
 })
