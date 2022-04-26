@@ -14,29 +14,39 @@ import {
 
 Vue.use(VueRouter)
 
-const routes = [{
-    path: '/',
-    name: '',
-    redirect: '/center'
-},
-
-
-{
-    path: '/center',
-    name: 'center',
-    component: () => import('@/views/center/center.vue'),
-
-    children: [{
-        path: 'user',
-        name: 'user',
-        component: () => import('@/views/center/user/userList.vue')
+const routes = [
+    {
+        path: '/',
+        name: '',
+        redirect: '/center'
+    },
+    {
+        path: '/login',
+        name: 'login',
+        component: () => import('@/views/login.vue'),
     },
 
-    ]
-}]
-const router = new VueRouter({
-    routes
-})
+    {
+        path: '/center',
+        name: 'center',
+        component: () => import('@/views/center/center.vue'),
+
+        children: [
+            {
+                path: 'index',
+                name: 'index',
+                component: () => import('@/views/center/index.vue')
+            },
+            {
+                path: 'user',
+                name: 'user',
+                component: () => import('@/views/center/user/userList.vue')
+            },
+        ]
+    }]
+    const router = new VueRouter({
+        routes
+    })
 /**
  * 路由守卫
  */
@@ -49,26 +59,26 @@ router.beforeEach(async (to, from, next) => {
     //             return
     //         }
     //     }
-        if (to.meta.permission) {
-            let sign = false
-            if (to.meta.permission instanceof Array) {
-                to.meta.permission.forEach(item => {
-                    if (authoritys.indexOf(item) >= 0) {
-                        sign = true
-                    }
-                })
-            } else if (authoritys.indexOf(to.meta.permission) > -1) sign = true
+    if (to.meta.permission) {
+        let sign = false
+        if (to.meta.permission instanceof Array) {
+            to.meta.permission.forEach(item => {
+                if (authoritys.indexOf(item) >= 0) {
+                    sign = true
+                }
+            })
+        } else if (authoritys.indexOf(to.meta.permission) > -1) sign = true
 
-            if (!sign) {
-                // if (to.name == 'login') {
-                //     console.log("进入coupon权限不足");
-                //     // next('/login');
-                // } else {
-                    console.log('权限不足')
-                // }
-                return;
-            }
+        if (!sign) {
+            // if (to.name == 'login') {
+            //     console.log("进入coupon权限不足");
+            //     // next('/login');
+            // } else {
+            console.log('权限不足')
+            // }
+            return;
         }
+    }
     // }
     next();
 })
