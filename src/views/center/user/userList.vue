@@ -367,19 +367,10 @@ export default {
     };
   },
   mounted() {
-    this.getSysUserList();
-    this.showsysRoleList();
-    this.setContentHeight();
 
-    window.addEventListener("resize", () => {
-      this.setContentHeight();
-    });
+
   },
-  destroyed() {
-    window.removeEventListener("resize", () => {
-      this.setContentHeight();
-    });
-  },
+ 
   methods: {
     setContentHeight() {
       this.contentHeight = this.$refs.content.offsetHeight;
