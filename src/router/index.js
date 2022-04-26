@@ -19,20 +19,20 @@ const routes = [{
     name: '',
     redirect: '/center'
 },
-// {
-//     path: '/login',
-//     name: 'login',
-//     meta: {
-//         preMenuUrl: "/login",
-//     },
-//     component: () => import('@/views/login.vue')
-// },
+{
+    path: '/login',
+    name: 'login',
+    meta: {
+        preMenuUrl: "/login",
+    },
+    component: () => import('@/views/login.vue')
+},
 
 // {
 //     path: '/center',
 //     name: 'center',
 //     component: () => import('@/views/center/center.vue'),
-  
+
 //     children: [{
 //         path: 'qualityList',
 //         name: 'qualityList',
@@ -58,9 +58,9 @@ const routes = [{
 //         },
 //         component: () => import('@/views/center/authority/permission.vue')
 //     },
-    
-  
-   
+
+
+
     // ]
 // }
 ]

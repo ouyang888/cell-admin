@@ -31,14 +31,14 @@
               ><a-icon type="profile" /><span>工单管理</span></span
             >
             <a-menu-item
-              
+
             >
               <!-- <router-link to="/center/order"> 工单列表 </router-link> -->
             </a-menu-item>
           </a-sub-menu>
-         
-         
-          
+
+
+
         </a-menu>
       </a-layout-sider>
       <a-layout
@@ -111,7 +111,7 @@ import download from "@/views/download/download.vue";
 export default Vue.extend({
   data() {
     return {
-      collapsed: false,
+      collapsed: true,
       getAccount: getAccount(),
       routes: [
         {
