@@ -72,7 +72,7 @@
            <a-sub-menu key="销售单管理" >
             <span class="nav-text" slot="title"><a-icon type="pie-chart" /><span >销售单管理</span></span>
             <a-menu-item key="/center/saleList">
-              <router-link to="/center/sampleList"> 销售单列表 </router-link>
+              <router-link to="/center/saleList"> 销售单列表 </router-link>
             </a-menu-item>
             <a-menu-item key="/center/saleChannel">
               <router-link to="/center/saleChannel"> 销售渠道管理 </router-link>

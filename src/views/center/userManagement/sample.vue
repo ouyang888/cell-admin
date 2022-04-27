@@ -3,14 +3,14 @@
         <div class="content" ref="content">
             <div class="content-search">
                 <div class="manageHeader">
-                    <div class="titleContent">品牌管理</div>
-                    <!--                    <div class="headerSearch">-->
-                    <!--                        <a-input-search-->
-                    <!--                            v-model="value"-->
-                    <!--                            placeholder="样品名"-->
-                    <!--                            enter-button="搜索"-->
-                    <!--                        />-->
-                    <!--                    </div>-->
+                    <div class="titleContent">样品清单</div>
+                    <div class="headerSearch">
+                        <a-input-search
+                            v-model="value"
+                            placeholder="样品名"
+                            enter-button="搜索"
+                        />
+                    </div>
                 </div>
             </div>
             <div class="content-details">
@@ -46,11 +46,14 @@
                     </template>
                     <template slot="operation">
                         <div class="flex j-ey a-c">
-                            <a v-permission="'admin:setting:userList:update'">禁用</a>
-                            <a v-permission="'admin:setting:userList:update'">编辑</a>
                             <a v-permission="'admin:setting:userList:disable'">删除</a>
                         </div>
                     </template>
+                    <!--                    <template slot="enabled" slot-scope="text">-->
+                    <!--                        <div :style="{ color: text == 0 ? 'red' : '' }">-->
+                    <!--                            {{ text == 0 ? "禁用" : "正常" }}-->
+                    <!--                        </div>-->
+                    <!--                    </template>-->
                 </a-table>
                 <div class="flex j-e a-c pagination-wrapper">
                     <span style="margin-right: 10px"> 合计{{ totalCount }}条 </span>
@@ -72,65 +75,68 @@
             <p>此操作不可逆，请确认</p>
         </a-modal>
 
-        <!-- 新增客户 -->
         <a-modal
             cancelText="取消"
             okText="保存"
-            title="添加品牌"
+            title="添加样品"
+            :footer="null"
+            width="40%"
             v-model="addUser"
         >
-            <div class="flex j-c a-c" style="margin-top: 20px">
-                <div style="width: 100px">品牌名称：</div>
-                <a-input
-                    v-model="addUserList.userName"
-                    placeholder="请输入"
-                ></a-input>
+            <div class="headerSearch" style="display: flex;margin-bottom: 20px">
+                <a-input-search
+                    v-model="value"
+                    placeholder="样品名"
+                    enter-button="搜索"
+                />
+
+                <a-button type="primary" style="margin-left: 15px;">确定添加</a-button>
             </div>
-            <div class="flex j-c a-c" style="margin-top: 20px">
-                <div style="width: 100px">品牌代号：</div>
-                <a-input
-                    v-model="addUserList.userName"
-                    placeholder="请输入"
-                ></a-input>
-            </div>
-            <div class="flex j-c a-c" style="margin-top: 20px">
-                <div style="width: 100px">状态：</div>
-                <a-radio-group v-model="value" name="radioGroup" style="width: 100%;">
-                    <a-radio value="1">启用</a-radio>
-                    <a-radio value="2">禁用</a-radio>
-                </a-radio-group>
-            </div>
+
+            <a-table :dataSource="addDataSource" :columns="addCouml" :row-selection="{ selectedRowKeys: selectedRowKeys }" />
+
         </a-modal>
     </div>
 </template>
 
 <script>
 import zhCN from "ant-design-vue/lib/locale-provider/zh_CN";
+
 export default {
     data() {
         let columns = [
             {
-                title: "品牌ID",
-                width: "90px",
-                dataIndex: "account",
-            },
-            {
-                title: "品牌名",
+                title: "样品名",
                 dataIndex: "userName",
                 ellipsis: true,
                 width: "100px",
                 scopedSlots: {customRender: "userName"},
             },
             {
-                title: "品牌代号",
-                width: "100px",
-                scopedSlots: {customRender: "userName"},
+                title: "型号",
+                dataIndex: "phone",
+                scopedSlots: {customRender: "phone"},
+                width: 120,
             },
             {
-                title: "状态",
+                title: "系列",
+                scopedSlots: {customRender: "phone"},
                 width: 120,
-                dataIndex: "createTime",
-                scopedSlots: {customRender: "createTime"},
+            },
+            {
+                title: "工艺",
+                scopedSlots: {customRender: "phone"},
+                width: 120,
+            },
+            {
+                title: "品牌",
+                scopedSlots: {customRender: "phone"},
+                width: 120,
+            },
+            {
+                title: "分类",
+                scopedSlots: {customRender: "phone"},
+                width: 120,
             },
             {
                 title: "操作",
@@ -142,6 +148,7 @@ export default {
         columns = columns.map((item) => {
             return {...item, align: "center"};
         });
+
         return {
             value1: '',
             searchdata: {},
@@ -152,13 +159,35 @@ export default {
             isloading: false,
             contentHeight: 0,
             dataSource: [],
+            addDataSource: [],
             count: 2,
             columns: columns,
             // new
             selectedRowKeys: [],
             deleteOpen: false,
             addUserList:{},
-            fileList: [],
+            addCouml: [
+                {
+                    title: "样品名",
+                    scopedSlots: {customRender: "phone"},
+                    width: 120,
+                },
+                {
+                    title: "型号",
+                    scopedSlots: {customRender: "phone"},
+                    width: 120,
+                },
+                {
+                    title: "系列",
+                    scopedSlots: {customRender: "phone"},
+                    width: 120,
+                },
+                {
+                    title: "品牌",
+                    scopedSlots: {customRender: "phone"},
+                    width: 120,
+                },
+            ]
         }
     },
 

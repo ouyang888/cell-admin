@@ -18,7 +18,7 @@ const routes = [
     {
         path: '/',
         name: '',
-        redirect: '/center'
+        redirect: '/center/index'
     },
     {
         path: '/login',
@@ -49,6 +49,14 @@ const routes = [
                     preMenuUrl: "/center/userManagement"
                 },
                 component: () => import('@/views/center/userManagement/userList.vue')
+            },
+            {
+                path: 'sample',
+                name: 'sample',
+                meta: {
+                    preMenuUrl: "/center/userManagement"
+                },
+                component: () => import('@/views/center/userManagement/sample.vue')
             },
             {
                 path: 'distribution',
@@ -85,12 +93,9 @@ const routes = [
                 component: () => import('@/views/center/filingSheet/filingSheet.vue')
             },
             {
-                path: 'saleList',
-                name: 'saleList',
-                meta: {
-                    preMenuUrl: "/center/sale"
-                },
-                component: () => import('@/views/center/sale/saleList.vue')
+                path: 'addReporting',
+                name: 'addReporting',
+                component: () => import('@/views/center/filingSheet/addReporting.vue')
             },
             {
                 path: 'saleList',
@@ -99,6 +104,14 @@ const routes = [
                     preMenuUrl: "/center/sale"
                 },
                 component: () => import('@/views/center/sale/saleList.vue')
+            },
+            {
+                path: 'editSale',
+                name: 'editSale',
+                meta: {
+                    preMenuUrl: "/center/sale"
+                },
+                component: () => import('@/views/center/sale/editSale.vue')
             },
             {
                 path: 'saleChannel',

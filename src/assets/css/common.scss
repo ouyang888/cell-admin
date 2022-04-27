@@ -2,9 +2,9 @@
 .containter {
     height: 100%;
     position: relative;
-    padding-top: 53px;
+    //padding-top: 53px;
     overflow: hidden;
-    
+
     &.containter-have-title {
         padding-top: 73px;
     }
@@ -37,12 +37,12 @@
         padding:20px;
         padding-bottom: 0;
         background: #fff;
-    }   
+    }
   }
 // flex
 .flex {
   display: flex;
-} 
+}
 .j-c {
   justify-content: center;
 }
@@ -83,7 +83,7 @@
 cursor:pointer
 }
 .blue {
-color: #1890FF; 
+color: #1890FF;
 }
 .opacity-4{
   opacity: 0.4;
