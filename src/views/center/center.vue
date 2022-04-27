@@ -12,7 +12,7 @@
       >
         <div class="logo flex a-c">
           <img style="height: 100%" src="@/assets/img/logo.jpg" />
-          <div style="margin-left: 10px" v-show="!collapsed">盘古质检平台</div>
+          <div style="margin-left: 10px" v-show="!collapsed">长和家居平台</div>
         </div>
         <a-menu
           theme="dark"
@@ -20,20 +20,62 @@
           :defaultOpenKeys="['工单管理','基础数据','系统管理','设置']"
           v-model="searchKeys"
         >
-          <!-- <a-menu-item key="/center/qualityList" v-permission="'admin:quality'">
-            <router-link to="/center/qualityList"
-              ><a-icon type="pie-chart" /> {{ collapsed ? "" : "质检列表" }}
+          <a-menu-item key="/center/index">
+            <router-link to="/center/index"
+              ><a-icon type="pie-chart" /><span>管理首页</span>
             </router-link>
-          </a-menu-item> -->
+          </a-menu-item>
 
-          <a-sub-menu key="工单管理" >
+           <a-menu-item key="/center/management">
+            <router-link to="/center/management"
+              ><a-icon type="pie-chart" /><span>管理员管理</span>
+            </router-link>
+          </a-menu-item>
+
+          <a-sub-menu key="客户管理" >
             <span class="nav-text" slot="title"
-              ><a-icon type="profile" /><span>工单管理</span></span
+              ><a-icon type="pie-chart" /><span >客户管理</span></span
             >
-            <a-menu-item
+            <a-menu-item key="/center/userList">
+              <router-link to="/center/userList"> 客户管理 </router-link>
+            </a-menu-item>
+            <a-menu-item key="/center/distribution">
+              <router-link to="/center/distribution"> 分销区域管理 </router-link>
+            </a-menu-item>
+          </a-sub-menu>
 
-            >
-              <!-- <router-link to="/center/order"> 工单列表 </router-link> -->
+
+          <a-sub-menu key="样品管理" >
+            <span class="nav-text" slot="title"><a-icon type="pie-chart" /><span >样品管理</span></span>
+            <a-menu-item key="/center/sampleList">
+              <router-link to="/center/sampleList"> 样品列表 </router-link>
+            </a-menu-item>
+            <a-menu-item key="/center/classified">
+              <router-link to="/center/classified"> 分类管理 </router-link>
+            </a-menu-item>
+          </a-sub-menu>
+
+
+           <a-menu-item key="/center/brand">
+            <router-link to="/center/brand"
+              ><a-icon type="pie-chart" /><span>品牌管理</span>
+            </router-link>
+          </a-menu-item>
+
+            <a-menu-item key="/center/filingSheet">
+            <router-link to="/center/filingSheet"
+              ><a-icon type="pie-chart" /><span>报备单管理</span>
+            </router-link>
+          </a-menu-item>
+
+
+           <a-sub-menu key="销售单管理" >
+            <span class="nav-text" slot="title"><a-icon type="pie-chart" /><span >销售单管理</span></span>
+            <a-menu-item key="/center/saleList">
+              <router-link to="/center/sampleList"> 销售单列表 </router-link>
+            </a-menu-item>
+            <a-menu-item key="/center/saleChannel">
+              <router-link to="/center/saleChannel"> 销售渠道管理 </router-link>
             </a-menu-item>
           </a-sub-menu>
 
@@ -111,7 +153,7 @@ import download from "@/views/download/download.vue";
 export default Vue.extend({
   data() {
     return {
-      collapsed: true,
+      collapsed: false,
       getAccount: getAccount(),
       routes: [
         {

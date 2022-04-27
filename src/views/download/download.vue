@@ -81,7 +81,7 @@ export default {
     },
     mounted(){
         this.loading = true
-        this.downloadPage()
+        // this.downloadPage()
     },
     methods: {
         async downloadPage (){
@@ -104,12 +104,12 @@ export default {
         // 分页器
         pageChange(page){
             this.searchData.page = page
-            this.downloadPage()
+            // this.downloadPage()
         },
         productSizeChange(current, size){
             this.searchData.page = 1
             this.searchData.limit = size
-            this.downloadPage()
+            // this.downloadPage()
         },
     },
     computed:{
@@ -123,7 +123,7 @@ export default {
     watch:{
         downloadVisible:function (val) {
             if(val){
-                this.downloadPage()
+                // this.downloadPage()
                 this.unfinished=1
                 if (this.unfinished>0) {
                     this.setInterval=setInterval(() => {

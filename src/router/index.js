@@ -14,56 +14,102 @@ import {
 
 Vue.use(VueRouter)
 
-const routes = [{
-    path: '/',
-    name: '',
-    redirect: '/center'
-},
-{
-    path: '/login',
-    name: 'login',
-    meta: {
-        preMenuUrl: "/login",
+const routes = [
+    {
+        path: '/',
+        name: '',
+        redirect: '/center'
     },
-    component: () => import('@/views/login.vue')
-},
+    {
+        path: '/login',
+        name: 'login',
+        component: () => import('@/views/login.vue'),
+    },
 
-// {
-//     path: '/center',
-//     name: 'center',
-//     component: () => import('@/views/center/center.vue'),
+    {
+        path: '/center',
+        name: 'center',
+        component: () => import('@/views/center/center.vue'),
 
-//     children: [{
-//         path: 'qualityList',
-//         name: 'qualityList',
-//         meta: {
-//             permission: "admin:quality",
-//         },
-//         component: () => import('@/views/center/quality/qualityList.vue')
-//     },
-//     {
-//         path: 'addQuality',
-//         name: 'addQuality',
-//         meta: {
-//             preMenuUrl: "/center/qualityList",
-//             permission: "admin:quality:update",
-//         },
-//         component: () => import('@/views/center/quality/addQuality.vue')
-//     },
-//     {
-//         path: 'permission',
-//         name: 'permission',
-//         meta: {
-//             permission: "admin:setting:permissionList",
-//         },
-//         component: () => import('@/views/center/authority/permission.vue')
-//     },
-
-
-
-    // ]
-// }
-]
+        children: [
+            {
+                path: 'index',
+                name: 'index',
+                component: () => import('@/views/center/index/index.vue')
+            },
+            {
+                path: 'management',
+                name: 'management',
+                component: () => import('@/views/center/management/management.vue')
+            },
+            {
+                path: 'userList',
+                name: 'userList',
+                meta: {
+                    preMenuUrl: "/center/userManagement"
+                },
+                component: () => import('@/views/center/userManagement/userList.vue')
+            },
+            {
+                path: 'distribution',
+                name: 'distribution',
+                meta: {
+                    preMenuUrl: "/center/userManagement"
+                },
+                component: () => import('@/views/center/userManagement/distribution.vue')
+            },
+            {
+                path: 'sampleList',
+                name: 'sampleList',
+                meta: {
+                    preMenuUrl: "/center/sample"
+                },
+                component: () => import('@/views/center/sample/sampleList.vue')
+            },
+            {
+                path: 'classified',
+                name: 'classified',
+                meta: {
+                    preMenuUrl: "/center/sample"
+                },
+                component: () => import('@/views/center/sample/classified.vue')
+            },
+            {
+                path: 'brand',
+                name: 'brand',
+                component: () => import('@/views/center/brand/brand.vue')
+            },
+            {
+                path: 'filingSheet',
+                name: 'filingSheet',
+                component: () => import('@/views/center/filingSheet/filingSheet.vue')
+            },
+            {
+                path: 'saleList',
+                name: 'saleList',
+                meta: {
+                    preMenuUrl: "/center/sale"
+                },
+                component: () => import('@/views/center/sale/saleList.vue')
+            },
+            {
+                path: 'saleList',
+                name: 'saleList',
+                meta: {
+                    preMenuUrl: "/center/sale"
+                },
+                component: () => import('@/views/center/sale/saleList.vue')
+            },
+            {
+                path: 'saleChannel',
+                name: 'saleChannel',
+                meta: {
+                    preMenuUrl: "/center/sale"
+                },
+                component: () => import('@/views/center/sale/saleChannel.vue')
+            },
+        ]
+    }]
 const router = new VueRouter({
     routes
 })
@@ -79,26 +125,26 @@ router.beforeEach(async (to, from, next) => {
     //             return
     //         }
     //     }
-    //     if (to.meta.permission) {
-    //         let sign = false
-    //         if (to.meta.permission instanceof Array) {
-    //             to.meta.permission.forEach(item => {
-    //                 if (authoritys.indexOf(item) >= 0) {
-    //                     sign = true
-    //                 }
-    //             })
-    //         } else if (authoritys.indexOf(to.meta.permission) > -1) sign = true
+    // if (to.meta.permission) {
+    //     let sign = false
+    //     if (to.meta.permission instanceof Array) {
+    //         to.meta.permission.forEach(item => {
+    //             if (authoritys.indexOf(item) >= 0) {
+    //                 sign = true
+    //             }
+    //         })
+    //     } else if (authoritys.indexOf(to.meta.permission) > -1) sign = true
 
-    //         if (!sign) {
-    //             // if (to.name == 'login') {
-    //             //     console.log("进入coupon权限不足");
-    //             //     // next('/login');
-    //             // } else {
-    //                 console.log('权限不足')
-    //             // }
-    //             return;
-    //         }
+    //     if (!sign) {
+    //         // if (to.name == 'login') {
+    //         //     console.log("进入coupon权限不足");
+    //         //     // next('/login');
+    //         // } else {
+    //         console.log('权限不足')
+    //         // }
+    //         return;
     //     }
+    // }
     // }
     next();
 })

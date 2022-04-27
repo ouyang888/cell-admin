@@ -1,31 +1,46 @@
 <template>
-    <view>
-        <view class="logo">长和家居</view>
-        <a-form
-            class="login-form"
-        >
-            <a-form-item
-                label="Username"
-                name="username"
-                :rules="[{ required: true, message: 'Please input your username!' }]"
+    <div>
+        <div class="logo">长和家居</div>
+        <div>
+            <a-form
+                :model="formState"
+                name="basic"
+                :label-col="{ span: 8 }"
+                :wrapper-col="{ span: 16 }"
+                autocomplete="off"
             >
-                <a-input v-model="formState.value" placeholder="Basic usage" />
-            </a-form-item>
-        </a-form>
-    </view>
+                <a-form-item
+                    label="Username"
+                    name="username"
+                    :rules="[{ required: true, message: 'Please input your username!' }]"
+                >
+                    <a-input v-model="formState.username"/>
+                </a-form-item>
+            </a-form>
+        </div>
+    </div>
 </template>
-
 <script>
-export default {
-    name: "login",
-    data(){
-        return {
-            formState: ''
-        }
-    },
-}
-</script>
+    import api from "@/service/api";
+    import {getToken} from "@/utils/auth";
 
-<style scoped>
+    export default {
+        name: "login",
+        data() {
+            return {
+                formState: {}
+            };
+        },
+        methods: {
+            //登录
+
+        },
+        mounted() {
+
+        },
+
+    };
+</script>
+<style lang="scss" scoped>
 
 </style>
