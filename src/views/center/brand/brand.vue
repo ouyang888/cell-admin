@@ -4,13 +4,6 @@
             <div class="content-search">
                 <div class="manageHeader">
                     <div class="titleContent">品牌管理</div>
-                    <!--                    <div class="headerSearch">-->
-                    <!--                        <a-input-search-->
-                    <!--                            v-model="value"-->
-                    <!--                            placeholder="样品名"-->
-                    <!--                            enter-button="搜索"-->
-                    <!--                        />-->
-                    <!--                    </div>-->
                 </div>
             </div>
             <div class="content-details">
@@ -18,51 +11,24 @@
                     <a-button type="primary" @click="addUser = true">添加</a-button>
                     <a-button type="danger" style="margin-left: 10px;" @click="showDelModal">批量删除</a-button>
                 </div>
-                <a-table
-                    rowKey="id"
-                    :pagination="false"
-                    :data-source="dataSource"
-                    :columns="columns"
-                    :loading="isloading"
-                    :row-selection="{ selectedRowKeys: selectedRowKeys }"
-                    :scroll="{ y: contentHeight - 369 }"
-                >
-                    <template slot="name" slot-scope="text, record">
-                        {{ record.key }}
-                        <div class="overflow-one" style="max-width: 250px"></div>
-                    </template>
-                    <template
-                        slot="userName"
-                        style="min-width: 100px"
-                        slot-scope="userName"
-                    >
-                        {{ userName }}
-                    </template>
-                    <template slot="phone" slot-scope="phone">
-                        {{ phone }}
-                    </template>
-                    <template slot="role" slot-scope="role">
-                        {{ role }}
+                <a-table rowKey="id" :pagination="false" :data-source="dataSource" :columns="columns"
+                    :loading="isloading" :row-selection="{ selectedRowKeys: selectedRowKeys }"
+                    :scroll="{ y: contentHeight - 369 }">
+                    <template slot="state" slot-scope="state">
+                        {{ state == 'A' ? '可用' : '禁用' }}
                     </template>
                     <template slot="operation">
                         <div class="flex j-ey a-c">
-                            <a v-permission="'admin:setting:userList:update'">禁用</a>
-                            <a v-permission="'admin:setting:userList:update'">编辑</a>
-                            <a v-permission="'admin:setting:userList:disable'">删除</a>
+                            <a>禁用</a>
+                            <a>编辑</a>
+                            <a>删除</a>
                         </div>
                     </template>
                 </a-table>
                 <div class="flex j-e a-c pagination-wrapper">
                     <span style="margin-right: 10px"> 合计{{ totalCount }}条 </span>
-                    <a-pagination
-                        class="flex j-e pagination"
-                        :current="searchdata.num"
-                        :total="totalCount"
-                        :locale="locale"
-                        show-size-changer
-                        @change="changePage"
-                        @showSizeChange="couponSizeChange"
-                    />
+                    <a-pagination class="flex j-e pagination" :current="searchdata.num" :total="totalCount"
+                        :locale="locale" show-size-changer @change="changePage" @showSizeChange="couponSizeChange" />
                 </div>
             </div>
         </div>
@@ -73,31 +39,20 @@
         </a-modal>
 
         <!-- 新增客户 -->
-        <a-modal
-            cancelText="取消"
-            okText="保存"
-            title="添加品牌"
-            v-model="addUser"
-        >
+        <a-modal cancelText="取消" @ok="addBrandInfo" okText="保存" title="添加品牌" v-model="addUser">
             <div class="flex j-c a-c" style="margin-top: 20px">
                 <div style="width: 100px">品牌名称：</div>
-                <a-input
-                    v-model="addUserList.userName"
-                    placeholder="请输入"
-                ></a-input>
+                <a-input v-model="addUserList.name" placeholder="请输入"></a-input>
             </div>
             <div class="flex j-c a-c" style="margin-top: 20px">
                 <div style="width: 100px">品牌代号：</div>
-                <a-input
-                    v-model="addUserList.userName"
-                    placeholder="请输入"
-                ></a-input>
+                <a-input v-model="addUserList.code" placeholder="请输入"></a-input>
             </div>
             <div class="flex j-c a-c" style="margin-top: 20px">
                 <div style="width: 100px">状态：</div>
-                <a-radio-group v-model="value" name="radioGroup" style="width: 100%;">
-                    <a-radio value="1">启用</a-radio>
-                    <a-radio value="2">禁用</a-radio>
+                <a-radio-group v-model="addUserList.state" name="radioGroup" style="width: 100%;">
+                    <a-radio value="A">启用</a-radio>
+                    <a-radio value="D">禁用</a-radio>
                 </a-radio-group>
             </div>
         </a-modal>
@@ -106,41 +61,42 @@
 
 <script>
 import zhCN from "ant-design-vue/lib/locale-provider/zh_CN";
+import API from "../../../service/api";
 export default {
     data() {
         let columns = [
             {
                 title: "品牌ID",
-                width: "90px",
-                dataIndex: "account",
+                width: "130px",
+                dataIndex: "id",
             },
             {
                 title: "品牌名",
-                dataIndex: "userName",
-                ellipsis: true,
+                dataIndex: "name",
                 width: "100px",
-                scopedSlots: {customRender: "userName"},
+                scopedSlots: { customRender: "name" },
             },
             {
                 title: "品牌代号",
                 width: "100px",
-                scopedSlots: {customRender: "userName"},
+                dataIndex: "code",
+                scopedSlots: { customRender: "code" },
             },
             {
                 title: "状态",
                 width: 120,
-                dataIndex: "createTime",
-                scopedSlots: {customRender: "createTime"},
+                dataIndex: "state",
+                scopedSlots: { customRender: "state" },
             },
             {
                 title: "操作",
-                width: "190px",
+                width: "140px",
                 fixed: "right",
-                scopedSlots: {customRender: "operation"},
+                scopedSlots: { customRender: "operation" },
             },
         ];
         columns = columns.map((item) => {
-            return {...item, align: "center"};
+            return { ...item, align: "center" };
         });
         return {
             value1: '',
@@ -157,26 +113,47 @@ export default {
             // new
             selectedRowKeys: [],
             deleteOpen: false,
-            addUserList:{},
+            addUserList: {},
             fileList: [],
+            pageNo: 1,
+            pageSize: 10,
         }
     },
+
+    mounted() {
+        this.brandInfo();
+    },
+
 
     methods: {
         // 分页改变
         changePage(page) {
-            this.searchdata.num = page;
-            this.getSysUserList();
+            this.pageNo = page;
+            this.brandInfo();
         },
         // 分页的回调
         couponSizeChange(current, size) {
-            this.searchdata.num = 1;
-            this.searchdata.size = size;
-            this.getSysUserList();
+            this.pageNo = 1;
+            this.pageSize = size;
+            this.brandInfo();
         },
         //删除弹出
-        showDelModal(){
+        showDelModal() {
             this.deleteOpen = true;
+        },
+
+        async brandInfo() {
+            let res = await API.brandList(this.pageNo, this.pageSize);
+            this.dataSource = res.data.records;
+            this.totalCount = res.data.total
+        },
+
+        async addBrandInfo() {
+            let res = await API.addBrand(this.addUserList);
+            if (res.errorCode == 0) {
+                this.addUser = false;
+                this.brandInfo();
+            }
         },
     }
 }
@@ -189,11 +166,11 @@ export default {
     align-items: center;
 }
 
-.headerSearch{
+.headerSearch {
     display: flex;
 }
 
-.manageAll{
+.manageAll {
     display: flex;
     justify-content: flex-end;
     align-items: center;

@@ -8,6 +8,7 @@ import pageHeader from '@/components/page-header.vue';
 import uploadPicture from '@/components/upload-picture.vue';
 import '@/assets/css/common.scss';
 import mixin from "@/utils/mixin";
+import axios from "axios";
 
 Vue.config.productionTip = false
 Vue.use(antd)
@@ -16,16 +17,15 @@ Vue.component('upload-picture', uploadPicture);
 // 注册
 Vue.directive('permission', {
   inserted: function (el, binding, vnode) {
-    let userAuthoritys = store.getters.getAuthoriths||[];
-    if(userAuthoritys.indexOf(binding.value) <= -1) {
+    let userAuthoritys = store.getters.getAuthoriths || [];
+    if (userAuthoritys.indexOf(binding.value) <= -1) {
       el.parentNode.removeChild(el);
     }
   },
-  update: function () {},
-  componentUpdated: function () {},
-  unbind: function () {}
+  update: function () { },
+  componentUpdated: function () { },
+  unbind: function () { }
 })
-
 Vue.mixin(mixin)
 
 

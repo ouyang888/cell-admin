@@ -1,10 +1,10 @@
-const admin_dev = '/apa/'
+const admin_dev = '/dms/'
 
-const admin_test ='https://devnewdota.smartmidea.net/quality-service/'
+const admin_test ='https://changhejiaju.com.cn/dms'
 
-const admin_uat = 'https://devnewdota.smartmidea.net/uat/quality-service/'
+const admin_uat = 'http://120.24.82.198:8808'
 
-const admin_pro = 'https://lease.msmartlife.com/quality-service/'
+const admin_pro = 'http://120.24.82.198:8808'
 
 let local = 'test'
 

@@ -132,5 +132,5 @@ export default {
         }
       
         return instance.post(url, data, config)
-    }
+    },
 };
