@@ -190,7 +190,7 @@ export default {
             deleteOpen: false,
             pageNo: 1,
             pageSize: 10,
-            ids: ""
+            ids: []
         };
     },
     mounted() {
@@ -202,7 +202,7 @@ export default {
         showDelModal(id) {
             this.ids = []
             this.deleteOpen = true;
-            this.ids = id
+            this.ids.push(id)
         },
 
 
@@ -238,8 +238,8 @@ export default {
             this.userList();
         },
 
-        async delAccount(id) {
-            let res = await API.addUser({ ids: this.ids });
+        async delAccount() {
+            let res = await API.delUser({ ids: this.ids });
             if (res.errorCode == 0) {
                 this.deleteOpen = false
             }

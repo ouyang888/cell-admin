@@ -26,15 +26,21 @@ export default class ApiService {
   }
 
 
-   // 品牌管理
-   static brandList(pageNo, pageSize) {
+  // 品牌管理
+  static brandList(pageNo, pageSize) {
     return request.get(api.adminUrl + `manager/brand/selectPage?pageNo=${pageNo}&pageSize=${pageSize}`, "", { headers: { "token": token } });
   }
 
-    //新增品牌
-    static addBrand(data) {
-      return request.post(api.adminUrl + `manager/brand`, data,{ headers: { "token": token } });
-    }
+  //新增品牌
+  static addBrand(data) {
+    return request.post(api.adminUrl + `manager/brand`, data, { headers: { "token": token } });
+  }
 
-  
+
+  //分销区域管理
+  static selectTreeList() {
+    return request.get(api.adminUrl + `manager/sales/area/selectTree`, "", { headers: { "token": token } });
+  }
+
+
 }

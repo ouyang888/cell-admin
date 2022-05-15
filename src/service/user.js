@@ -13,8 +13,8 @@ export default class AuthApiService {
     }
 
      //删除账号
-    //  static addUser(data) {
-    //     return request.post(api.adminUrl + `/manager/user`, data, { headers: { "token": token } });
-    // }
+     static delUser(data) {
+        return request.post(api.adminUrl + `/manager/user/delete`, data, { headers: { "token": token } });
+    }
 
 }
