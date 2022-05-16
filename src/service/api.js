@@ -84,4 +84,43 @@ export default class ApiService {
     return request.post(api.adminUrl + `manager/sample/type/update`, data, { headers: { "token": token } });
   }
 
-}  
+
+    //报备单管理 列表
+    // static filingSheetList(data) {
+    //     return request.get(api.adminUrl + `manager/report/selectPage`, data, { headers: { "token": token } });
+    // }
+    static filingSheetList(pageNo, pageSize,queryParam) {
+        return request.get(api.adminUrl + `manager/report/selectPage?pageNo=${pageNo}&pageSize=${pageSize}&queryParam=${queryParam}`, "", { headers: { "token": token } });
+    }
+
+    //报备单管理 新增
+    static filingSheetAdd(data) {
+        return request.post(api.adminUrl + `manager/report`, data, { headers: { "token": token } });
+    }
+
+    //报备单管理 删除
+    static filingSheetDel(data) {
+        return request.post(api.adminUrl + `manager/report/delete`, data, { headers: { "token": token } });
+    }
+
+    //报备单管理 修改
+    static filingSheetEdit(data) {
+        return request.post(api.adminUrl + `manager/report/update`, data, { headers: { "token": token } });
+    }
+
+    //报备单管理 更新状态
+    static filingSheetUpdate(data) {
+        return request.post(api.adminUrl + `manager/report/updateState`, data, { headers: { "token": token } });
+    }
+
+    //报备单管理 确认延期
+    static filingSheetDelay(data) {
+        return request.post(api.adminUrl + `manager/report/confirmDelay`, data, { headers: { "token": token } });
+    }
+
+    //报备单管理 获取报备单详情
+    static filingSheetDetail(data) {
+        return request.post(api.adminUrl + `manager/report/get`, data, { headers: { "token": token } });
+    }
+
+}
