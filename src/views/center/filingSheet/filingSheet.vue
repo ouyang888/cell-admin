@@ -41,29 +41,32 @@
                     :row-selection="{ selectedRowKeys: selectedRowKeys }"
                     :scroll="{ y: contentHeight - 369 }"
                 >
-                    <template slot="name" slot-scope="text, record">
-                        {{ record.key }}
-                        <div class="overflow-one" style="max-width: 250px"></div>
-                    </template>
-                    <template
-                        slot="userName"
-                        style="min-width: 100px"
-                        slot-scope="userName"
-                    >
-                        {{ userName }}
-                    </template>
-                    <template slot="phone" slot-scope="phone">
-                        {{ phone }}
-                    </template>
-                    <template slot="role" slot-scope="role">
-                        {{ role }}
-                    </template>
-                    <template slot="operation">
+<!--                    <template slot="name" slot-scope="text, record">-->
+<!--                        {{ record.key }}-->
+<!--                        <div class="overflow-one" style="max-width: 250px"></div>-->
+<!--                    </template>-->
+<!--                    <template-->
+<!--                        slot="userName"-->
+<!--                        style="min-width: 100px"-->
+<!--                        slot-scope="userName"-->
+<!--                    >-->
+<!--                        {{ userName }}-->
+<!--                    </template>-->
+<!--                    <template slot="phone" slot-scope="phone">-->
+<!--                        {{ phone }}-->
+<!--                    </template>-->
+<!--                    <template slot="role" slot-scope="role">-->
+<!--                        {{ role }}-->
+<!--                    </template>-->
+                    <template slot="operation" slot-scope="lineData">
                         <div class="flex j-ey a-c">
-                            <a v-permission="'admin:setting:userList:update'">确认延期</a>
-                            <a v-permission="'admin:setting:userList:update'">编辑 | </a>
-                            <a v-permission="'admin:setting:userList:disable'">删除</a>
-                            <a v-permission="'admin:setting:userList:disable'">查看模板消息</a>
+                            <a v-if="lineData.state == 0" @click="showExamineModal(lineData.id)">审核</a>
+                            <a v-if="lineData.state == 1" @click="showDelayModal(lineData.id)">确认延期</a>
+                            <a v-if="lineData.state == 2" @click="showRejectModal(lineData.id)">驳回原因</a>
+                            <a >编辑</a>
+                            <span>|</span>
+                            <a style="color:red" @click="showDelModal(lineData.id)">删除</a>
+                            <a @click="showSendModal(lineData.id)">查看模板消息</a>
                         </div>
                     </template>
                     <!--                    <template slot="enabled" slot-scope="text">-->
@@ -88,22 +91,22 @@
         </div>
 
         <!--   删除     -->
-        <a-modal v-model="deleteOpen" title="确认删除">
+        <a-modal v-model="delModal" title="确认删除">
             <p>此操作不可逆，请确认</p>
         </a-modal>
 
         <!--   延期    -->
-        <a-modal v-model="deleteOpen" title="确认延期">
+        <a-modal v-model="delayModal" title="确认延期">
             <p>确认后报备单将顺延一个报备周期</p>
         </a-modal>
 
         <!--   驳回    -->
-        <a-modal v-model="deleteOpen" title="驳回原因">
+        <a-modal v-model="rejectModal" title="驳回原因">
             <p>工程重复了</p>
         </a-modal>
 
         <!--   审核    -->
-        <a-modal v-model="deleteOpen" title="请审核">
+        <a-modal v-model="examineModal" title="请审核">
             <div class="flex j-c a-c" style="margin-bottom: 20px">
                 <a-radio-group v-model="value" name="radioGroup" style="width: 100%;">
                     <a-radio value="1">审核通过</a-radio>
@@ -116,7 +119,7 @@
         </a-modal>
 
         <!--   模板推送   -->
-        <a-modal v-model="deleteOpen" title="模板消息推送状态">
+        <a-modal v-model="sendModal" title="模板消息推送状态">
             <a-table :columns="modelColumns" :data-source="modelMsgSend">
                 <a slot="name" slot-scope="text">{{ text }}</a>
             </a-table>
@@ -234,6 +237,7 @@
 
 <script>
 import zhCN from "ant-design-vue/lib/locale-provider/zh_CN";
+import API from "../../../service/api";
 
 export default {
     data() {
@@ -241,63 +245,69 @@ export default {
             {
                 title: "报备单ID",
                 width: "90px",
-                dataIndex: "account",
+                dataIndex: "id",
             },
             {
                 title: "客户代码",
                 width: "90px",
+                dataIndex: "customerCode",
+                scopedSlots: { customRender: "customerCode" },
             },
             {
                 title: "项目名称",
-                dataIndex: "userName",
+                dataIndex: "projectName",
                 ellipsis: true,
                 width: "100px",
-                scopedSlots: {customRender: "userName"},
+                scopedSlots: {customRender: "projectName"},
             },
             {
                 title: "项目地址",
-                dataIndex: "phone",
-                scopedSlots: {customRender: "phone"},
+                dataIndex: "address",
+                scopedSlots: {customRender: "address"},
                 width: 120,
             },
             {
                 title: "用砖总量（片）",
-                scopedSlots: {customRender: "phone"},
+                scopedSlots: {customRender: "nature"},
+                dataIndex: "nature",
                 width: 120,
             },
             {
                 title: "项目几率",
-                scopedSlots: {customRender: "phone"},
+                scopedSlots: {customRender: "successRate"},
                 width: 120,
+                dataIndex: "successRate",
             },
             {
                 title: "报备时间",
-                scopedSlots: {customRender: "phone"},
+                scopedSlots: {customRender: "datetimeReport"},
                 width: 120,
+                dataIndex: "datetimeReport",
             },
             {
                 title: "用砖时间",
-                scopedSlots: {customRender: "phone"},
+                scopedSlots: {customRender: "datetimeUse"},
                 width: 120,
+                dataIndex: "datetimeUse",
             },
             {
                 title: "报备性质",
-                dataIndex: "role",
+                dataIndex: "natureStr",
                 width: "120px",
                 ellipsis: true,
-                scopedSlots: {customRender: "role"},
+                scopedSlots: {customRender: "natureStr"},
             },
             {
                 title: "报备状态",
                 width: 180,
-                dataIndex: "createTime",
-                scopedSlots: {customRender: "createTime"},
+                dataIndex: "stateStr",
+                scopedSlots: {customRender: "stateStr"},
             },
             {
                 title: "操作",
-                width: "190px",
+                width: "330px",
                 fixed: "right",
-                scopedSlots: {customRender: "operation"},
+                scopedSlots: { customRender: "operation" },
             },
         ];
         columns = columns.map((item) => {
@@ -317,7 +327,11 @@ export default {
             columns: columns,
             // new
             selectedRowKeys: [],
-            deleteOpen: false,
+            delModal: false,
+            delayModal:false,
+            rejectModal:false,
+            examineModal:false,
+            sendModal:false,
             addUserList:{},
             modelMsgSend: [],
             modelColumns: [
@@ -331,22 +345,58 @@ export default {
         }
     },
 
+    mounted() {
+        this.getList();
+    },
+
     methods: {
+        async getList() {
+            let res = await API.filingSheetList(1,10," ");
+            this.dataSource = res.data.records
+            this.totalCount = res.data.total
+        },
+
+        // 确认延期弹唱
+        showDelayModal(){
+            this.delayModal = true;
+        },
+
+        // 确认延期弹唱
+        showSendModal(){
+            this.sendModal = true;
+        },
+
+        //删除弹出
+        showDelModal(id){
+            console.log(id);
+            this.delModal = true;
+        },
+
+        // 驳回
+        showRejectModal(){
+            this.rejectModal = true;
+        },
+        // 审核
+        showExamineModal(){
+            this.examineModal = true;
+        },
+
+
+
+
+
         // 分页改变
         changePage(page) {
             this.searchdata.num = page;
-            this.getSysUserList();
+            this.getList();
         },
         // 分页的回调
         couponSizeChange(current, size) {
             this.searchdata.num = 1;
             this.searchdata.size = size;
-            this.getSysUserList();
+            this.userList();
         },
-        //删除弹出
-        showDelModal(){
-            this.deleteOpen = true;
-        },
+
     }
 }
 </script>
