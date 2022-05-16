@@ -7,7 +7,8 @@
                 <div class="manageHeader">
                     <div class="titleContent">管理员管理</div>
                     <div class="headerSearch">
-                        <a-input-search v-model="value" placeholder="用户名、手机号" enter-button="搜索" />
+                        <a-input-search v-model="searchValue" @search="userList" placeholder="用户名、手机号"
+                            enter-button="搜索" />
                     </div>
                 </div>
 
@@ -23,12 +24,12 @@
 
             <div class="content-details">
                 <div class="manageAll">
-                    <a-button type="primary" @click="addUser = true">添加</a-button>
+                    <a-button type="primary" @click="adduserModel(0)">添加</a-button>
                     <a-button type="danger" style="margin-left: 10px;" @click="showDelModal">批量删除</a-button>
                 </div>
                 <a-table rowKey="id" :pagination="false" :data-source="dataSource" :columns="columns"
                     :loading="isloading" :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
-                    :scroll="{ y: contentHeight - 369 }">
+                    :scroll="{ x: 1400, y: 1300 }">
                     <template slot="name" slot-scope="text, record">
                         {{ record.key }}
                         <div class="overflow-one" style="max-width: 250px"></div>
@@ -38,32 +39,21 @@
                     </template>
                     <template slot="operation" slot-scope="lineData">
                         <div class="flex j-ey a-c">
-                            <a @click="reRetUseInfo(lineData)">编辑</a>
+                            <a @click="editUser(lineData, 1)">编辑</a>
                             <a style="color:red" @click="showDelModal(lineData.id)">删除</a>
                         </div>
                     </template>
                 </a-table>
                 <div class="flex j-e a-c pagination-wrapper">
                     <span style="margin-right: 10px"> 合计{{ totalCount }}条 </span>
-                    <a-pagination class="flex j-e pagination" @change="changePage" :current="pageNo" :total="totalCount"
-                        :locale="locale" show-size-changer />
+                    <a-pagination class="flex j-e pagination" v-model="pageNo" @change="changePage"  :total="totalCount"
+                        :locale="locale" show-less-items />
                 </div>
             </div>
         </div>
 
-        <a-modal cancelText="取消" title="修改信息" v-model="showUserInfo">
-            <!-- :confirm-loading="confirmLoading" -->
-            <div class="flex j-c a-c" style="margin-bottom: 20px">
-                <div style="width: 100px">姓名：</div>
-                <a-input v-model="userInfo.userName" placeholder="请输入姓名"></a-input>
-            </div>
-            <div class="flex j-c a-c" style="margin-top: 10px">
-                <div style="width: 100px">手机号：</div>
-                <a-input v-model="userInfo.phone" placeholder="请输入手机号"></a-input>
-            </div>
-        </a-modal>
         <!-- 新增账户 -->
-        <a-modal v-model="addUser" @ok="addAccount" cancelText="取消" okText="保存" title="添加用户">
+        <a-modal v-model="addUser" @ok="saveUser" cancelText="取消" okText="保存" :title="items == 1 ? '修改用户' : '添加用户'">
             <div class="flex j-c a-c" style="margin-top: 10px">
                 <div style="width: 100px">手机号：</div>
                 <a-input v-model="addUserList.phone" placeholder="请输入手机号"></a-input>
@@ -110,7 +100,7 @@ export default {
             // },
             {
                 title: "管理员ID",
-                width: "90px",
+                width: "150px",
                 dataIndex: "id",
             },
             {
@@ -129,19 +119,19 @@ export default {
             {
                 title: "用户角色",
                 dataIndex: "level",
-                width: "250px",
+                width: "150px",
                 ellipsis: true,
                 scopedSlots: { customRender: "level" },
             },
             {
                 title: "上次登录时间",
-                width: 180,
+                width: 140,
                 dataIndex: "datetimeCreated",
                 scopedSlots: { customRender: "datetimeCreated" },
             },
             {
                 title: "操作",
-                width: "190px",
+                width: "120px",
                 fixed: "right",
                 scopedSlots: { customRender: "operation" },
             },
@@ -190,7 +180,9 @@ export default {
             deleteOpen: false,
             pageNo: 1,
             pageSize: 10,
-            ids: []
+            ids: [],
+            searchValue: "",
+            items: 0,
         };
     },
     mounted() {
@@ -206,8 +198,43 @@ export default {
         },
 
 
+        //修改用户信息
+        async editUser(item, index) {
+            this.addUser = true;
+            this.addUserList = item
+            this.items = index
+            // console.log("itemwww22",item)
+        },
+
+        adduserModel(index) {
+            this.items = index
+            this.addUserList = {}
+            this.addUser = true
+        },
+
+
+        //修改用户信息
+        async editAccount() {
+            let res = await API.updateUser(this.addUserList);
+            if (res.errorCode == 0) {
+                this.addUser = false
+                this.addUserList = {}
+                this.userList();
+            }
+        },
+
+        saveUser() {
+            if (this.items == 0) {
+                this.addAccount();
+            } else {
+                this.editAccount();
+            }
+
+        },
+
+
         async userList() {
-            let res = await API.getUserList(this.pageNo, this.pageSize);
+            let res = await API.getUserList(this.pageNo, this.pageSize, this.searchValue);
             this.dataSource = res.data.records;
             this.totalCount = res.data.total
         },
@@ -222,9 +249,9 @@ export default {
         },
 
         onSelectChange(selectedRowKeys) {
-            console.log('selectedRowKeys changed: ', selectedRowKeys);
             this.selectedRowKeys = selectedRowKeys;
         },
+
 
         // 分页改变
         changePage(page) {
@@ -239,9 +266,13 @@ export default {
         },
 
         async delAccount() {
-            let res = await API.delUser({ ids: this.ids });
+            let res = await API.delUser(this.selectedRowKeys.length != 0 ? this.selectedRowKeys : this.ids);
             if (res.errorCode == 0) {
-                this.deleteOpen = false
+                this.$message.success("删除成功", 0.5);
+                this.selectedRowKeys = [];
+                this.ids = [];
+                this.userList();
+                this.deleteOpen = false;
             }
         },
 

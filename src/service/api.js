@@ -43,4 +43,45 @@ export default class ApiService {
   }
 
 
-}
+  //样品列表
+  static sampleList(pageNo, pageSize) {
+    return request.get(api.adminUrl + `manager/sample?pageNo=${pageNo}&pageSize=${pageSize}`, "", { headers: { "token": token } });
+  }
+
+  //新增样品
+  static addSample(data) {
+    return request.post(api.adminUrl + `manager/sample`, data, { headers: { "token": token } });
+  }
+
+  // 品牌下拉列表
+  static brandChange() {
+    return request.get(api.adminUrl + `manager/brand`, "", { headers: { "token": token } });
+  }
+
+  // 样品分类下拉列表
+  static sampleType() {
+    return request.get(api.adminUrl + `manager/sample/type`, "", { headers: { "token": token } });
+  }
+
+  // 样品管理 -- 分类管理
+  static typeSelectPage(pageNo, pageSize) {
+    return request.get(api.adminUrl + `manager/sample/type/selectPage?pageNo=${pageNo}&pageSize=${pageSize}`, "", { headers: { "token": token } });
+  }
+
+
+  //新增样品管理 -- 分类管理
+  static addSampleTyple(data) {
+    return request.post(api.adminUrl + `manager/sample/type`, data, { headers: { "token": token } });
+  }
+
+  //删除样品管理 -- 分类管理
+  static delSampleTyple(data) {
+    return request.post(api.adminUrl + `manager/sample/delete`, data, { headers: { "token": token } });
+  }
+
+   //修改样品管理 -- 分类管理
+   static editSampleTyple(data) {
+    return request.post(api.adminUrl + `manager/sample/type/update`, data, { headers: { "token": token } });
+  }
+
+}  

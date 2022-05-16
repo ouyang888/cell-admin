@@ -115,7 +115,7 @@
         </a-layout-header>
         <a-layout-content class="layout-content">
           <keep-alive include="qualityList,outside,order">
-            <router-view :collapsedClose="collapsedClose" />
+            <router-view :collapsedClose="collapsedClose" />  
           </keep-alive>
         </a-layout-content>
       </a-layout>

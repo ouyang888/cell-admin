@@ -22,13 +22,19 @@
                 </div>
                 <a-table rowKey="id" :pagination="false" :data-source="dataSource" :columns="columns"
                     :loading="isloading" :row-selection="{ selectedRowKeys: selectedRowKeys }"
-                    :scroll="{ x: 1500, y: 300 }">
-                   
+                    :scroll="{ x: 1400, y: 1300 }">
+
                     <template slot="storeSpace" style="min-width: 100px" slot-scope="storeSpace">
                         {{ storeSpace }}平方米
                     </template>
-                    <template slot="wechat" style="min-width: 100px" slot-scope="wechat">
-                        <img style="width: 40px;height: 40px;border-radius: 50%;" :src="wechat.wxHeadImg" alt="">{{ wechat.wxNickName }}
+                    <template slot="wechat" slot-scope="wechat">
+                        <img style="width: 40px;height: 40px;border-radius: 50%;" :src="wechat.wxHeadImg" alt="">{{
+                                wechat.wxNickName
+                        }}
+                    </template>
+
+                    <template slot="state" slot-scope="state">
+                        {{ state == "A" ? '已启用' : '已禁用' }}
                     </template>
 
                     <template slot="operation">
@@ -36,14 +42,14 @@
                             <a>样品清单</a>
                             <a>禁用</a>
                             <a>编辑 | </a>
-                            <a>删除</a>
+                            <a style="color:red">删除</a>
                         </div>
                     </template>
                 </a-table>
                 <div class="flex j-e a-c pagination-wrapper">
                     <span style="margin-right: 10px"> 合计{{ totalCount }}条 </span>
-                    <a-pagination class="flex j-e pagination" :current="searchdata.num" :total="totalCount"
-                        :locale="locale" show-size-changer @change="changePage" @showSizeChange="couponSizeChange" />
+                    <a-pagination class="flex j-e pagination" v-model="pageNo" :total="totalCount"
+                        :locale="locale" show-less-items @change="changePage" @showSizeChange="couponSizeChange" />
                 </div>
             </div>
         </div>
@@ -130,7 +136,7 @@ export default {
         let columns = [
             {
                 title: "客户ID",
-                width: "90px",
+                width: "180px",
                 dataIndex: "id",
             },
             {
@@ -176,7 +182,7 @@ export default {
             },
             {
                 title: "微信",
-                dataIndex: "wechat",
+                // dataIndex: "wechat",
                 width: "120px",
                 scopedSlots: { customRender: "wechat" },
             },
@@ -188,7 +194,7 @@ export default {
             },
             {
                 title: "操作",
-                width: "190px",
+                width: "220px",
                 fixed: "right",
                 scopedSlots: { customRender: "operation" },
             },
@@ -244,8 +250,8 @@ export default {
             this.totalCount = res.data.total
         },
 
-        async addCustomerInfo(){
-             let res = await API.addCustomer(this.pageNo, this.pageSize);
+        async addCustomerInfo() {
+            let res = await API.addCustomer(this.pageNo, this.pageSize);
         },
 
     }
