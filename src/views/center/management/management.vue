@@ -64,7 +64,7 @@
             </div>
             <div class="flex j-c a-c" style="margin-top: 20px">
                 <div style="width: 100px">密码：</div>
-                <a-input type="password" v-model="addUserList.pwdMd5" placeholder="请输入密码"></a-input>
+                <a-input  v-model="addUserList.pwdMd5" placeholder="请输入密码"></a-input>
             </div>
             <span style="margin-top: 5px;font-size:12px;margin-left: 80px;">管理员登录后台得密码，请填写6-20位英文或数字</span>
             <div class="flex j-c a-c" style="margin-top: 20px">

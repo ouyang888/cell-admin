@@ -44,8 +44,8 @@ export default class ApiService {
 
 
   //样品列表
-  static sampleList(pageNo, pageSize) {
-    return request.get(api.adminUrl + `manager/sample?pageNo=${pageNo}&pageSize=${pageSize}`, "", { headers: { "token": token } });
+  static sampleList(pageNo, pageSize,queryParam) {
+    return request.get(api.adminUrl + `manager/sample?pageNo=${pageNo}&pageSize=${pageSize}&queryParam=${queryParam}`, "", { headers: { "token": token } });
   }
 
   //新增样品
@@ -76,7 +76,7 @@ export default class ApiService {
 
   //删除样品管理 -- 分类管理
   static delSampleTyple(data) {
-    return request.post(api.adminUrl + `manager/sample/delete`, data, { headers: { "token": token } });
+    return request.post(api.adminUrl + `manager/sample/type/delete`, data, { headers: { "token": token } });
   }
 
    //修改样品管理 -- 分类管理

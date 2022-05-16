@@ -4,13 +4,6 @@
             <div class="content-search">
                 <div class="manageHeader">
                     <div class="titleContent">样品分类</div>
-                    <!--                    <div class="headerSearch">-->
-                    <!--                        <a-input-search-->
-                    <!--                            v-model="value"-->
-                    <!--                            placeholder="样品名"-->
-                    <!--                            enter-button="搜索"-->
-                    <!--                        />-->
-                    <!--                    </div>-->
                 </div>
             </div>
             <div class="content-details">
@@ -27,7 +20,7 @@
                     </template>
                     <template slot="operation" slot-scope="operation">
                         <div class="flex j-ey a-c">
-                            <a @click="changeState(operation.state)">{{ operation.state == "A" ? '禁用' : '可用' }}</a>
+                            <a @click="changeState(operation)">{{ operation.state == "A" ? '禁用' : '可用' }}</a>
                             <a @click="editUser(operation, 1)">编辑</a>
                             <a style="color:red" @click="showDelModal(operation.id)">删除</a>
                         </div>
@@ -47,8 +40,7 @@
         </a-modal>
 
         <!-- 新增客户 -->
-        <a-modal cancelText="取消" @ok="addSampleTypleInfo" okText="保存" :title="items == 1 ? '修改分类' : '添加分类'"
-            v-model="addUser">
+        <a-modal cancelText="取消" @ok="saveUser" okText="保存" :title="items == 1 ? '修改分类' : '添加分类'" v-model="addUser">
             <div class="flex j-c a-c" style="margin-top: 20px">
                 <div style="width: 100px">分类名称：</div>
                 <a-input v-model="addUserList.name" placeholder="请输入"></a-input>
@@ -153,6 +145,7 @@ export default {
         },
 
         saveUser() {
+            console.log("!1212", this.items)
             if (this.items == 0) {
                 this.addSampleTypleInfo();
             } else {
@@ -204,7 +197,18 @@ export default {
 
         //点击可用禁用
         async changeState(item) {
-            let res = await API.editSampleTyple({ ...this.addUserList, state: item });
+            let code = ""
+            if (item.state == "D") {
+                code = "A"
+            } else if (item.state == "A") {
+                code = "D"
+            }
+            let list = {
+                id: item.id,
+                name: item.name,
+                state: code
+            }
+            let res = await API.editSampleTyple(list);
             if (res.errorCode == 0) {
                 this.$message.success("修改成功", 0.5);
                 this.typeInfo();

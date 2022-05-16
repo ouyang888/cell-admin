@@ -33,7 +33,7 @@ export default {
     methods: {
         //登录
         async login() {
-            this.formState.pwdMd5 = md5(this.formState.pwdMd5)
+            // this.formState.pwdMd5 = md5(this.formState.pwdMd5)
             let res = await api.managerLogin(this.formState)
             if (res.errorCode == 0) {
                 localStorage.setItem("token", res.data.token)

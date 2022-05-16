@@ -5,7 +5,8 @@
                 <div class="manageHeader">
                     <div class="titleContent">样品列表</div>
                     <div class="headerSearch">
-                        <a-input-search v-model="value" placeholder="样品名" enter-button="搜索" />
+                        <a-input-search v-model="searchValue" @search="sampleInfo" placeholder="样品名"
+                            enter-button="搜索" />
                     </div>
                 </div>
             </div>
@@ -19,20 +20,20 @@
                     :scroll="{ x: 1400, y: 1300 }">
 
                     <template slot="state" slot-scope="state">
-                        {{ state == "A" ? '可用' : '禁用' }}
+                        {{ state == "A" ? '上架' : '下架' }}
                     </template>
-                    <template slot="operation">
+                    <template slot="operation" slot-scope="text, record">
                         <div class="flex j-ey a-c">
-                            <a>下架</a>
-                            <a>编辑</a>
+                            <a>{{record.state == "A" ? '上架' : '下架'}}</a> 
+                            <a @click="editSample(record)">编辑</a>
                             <a style="color:red">删除</a>
                         </div>
                     </template>
                 </a-table>
                 <div class="flex j-e a-c pagination-wrapper">
                     <span style="margin-right: 10px"> 合计{{ totalCount }}条 </span>
-                    <a-pagination class="flex j-e pagination" v-model="pageNo" :total="totalCount"
-                        :locale="locale" show-less-items @change="changePage" @showSizeChange="couponSizeChange" />
+                    <a-pagination class="flex j-e pagination" v-model="pageNo" :total="totalCount" :locale="locale"
+                        show-less-items @change="changePage" @showSizeChange="couponSizeChange" />
                 </div>
             </div>
         </div>
@@ -43,7 +44,8 @@
         </a-modal>
 
         <!-- 新增客户 -->
-        <a-modal cancelText="取消" :maskClosable="false" @ok="addSampleInfo" okText="保存" title="添加样品" v-model="addUser" width="45%">
+        <a-modal cancelText="取消" :maskClosable="false" @ok="addSampleInfo" okText="保存" title="添加样品" v-model="addUser"
+            width="45%">
             <div class="flex j-c a-c" style="margin-top: 20px">
                 <div style="width: 100px">样品名称：</div>
                 <a-input v-model="addUserList.name" placeholder="请输入"></a-input>
@@ -125,28 +127,34 @@
             <div class="flex j-c a-c" style="margin-top: 20px">
                 <div style="width: 100px">缩略图：</div>
                 <div style="width: 100%">
-                    <a-upload v-model="addUserList.thumbnailImg"
-                        action="https://www.mocky.io/v2/5cc8019d300000980a055e76" list-type="picture-card">
-                        <div>
+                    <a-upload @change="changeRotateImgsTwo" @preview="handlePreviewTwo" :file-list="thumbnailImg"
+                        :headers="{ 'token': token }" :action="getupload" list-type="picture-card">
+                        <div v-if="thumbnailImg.length < 1">
                             <a-icon type="plus" />
                             <div style="margin-top: 8px">上传图片</div>
                         </div>
                     </a-upload>
                     <p>上传1张长宽比例为1:1的图片，用于小程序样品列表页展示</p>
+                    <a-modal :visible="previewVisible" :footer="null" @cancel="handleCancelTwo">
+                        <img alt="example" style="width: 100%" :src="previewImageTwo" />
+                    </a-modal>
                 </div>
             </div>
             <!-- v-if="addUserList.detailImgs.length < 20" -->
             <div class="flex j-c a-c" style="margin-top: 20px">
                 <div style="width: 100px">详情图片：</div>
                 <div style="width: 100%">
-                    <a-upload v-model="addUserList.detailImgs" action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-                        list-type="picture-card">
-                        <div>
+                    <a-upload :file-list="detailImgs" :headers="{ 'token': token }" :action="getupload"
+                        @change="changeRotateImgsThree" @preview="handlePreviewThree" list-type="picture-card">
+                        <div v-if="detailImgs.length < 20">
                             <a-icon type="plus" />
                             <div style="margin-top: 8px">上传图片</div>
                         </div>
                     </a-upload>
                     <p>可以上传多张图片，分辨率3000px以下，大小不得超过10M</p>
+                    <a-modal :visible="previewVisible" :footer="null" @cancel="handleCancelThree">
+                        <img alt="example" style="width: 100%" :src="previewImageThree" />
+                    </a-modal>
                 </div>
             </div>
 
@@ -253,18 +261,20 @@ export default {
             pageNo: 1,
             pageSize: 10,
             searchValue: "",
-            addUserList: {
-                rotateImgs: [],
-                thumbnailImg: [],
-                detailImgs: []
-            },
+            addUserList: {},
             brandList: "",
             sampleTypeList: "",
             token: "",
             rotateImgs: [],
+            thumbnailImg: [],
+            detailImgs: [],
             previewVisible: false,
             previewImage: '',
+            previewImageTwo: "",
+            previewImageThree: "",
             upImgUrl: [],
+            upImgUrlTwo: [],
+            upImgUrlThree: [],
         }
     },
 
@@ -306,12 +316,31 @@ export default {
             this.dataSource = res.data.records;
             this.totalCount = res.data.total
         },
+        //编辑样品
+        editSample(item) {
+            console.log("item",item)
+            this.addUser = true
+            this.addUserList = item
+        },
 
         //新增样品
-        addSampleInfo() {
-            console.log("image1轮播图", this.upImgUrl)
-            console.log("1122hhh", this.addUserList)
-            // let res = await API.addSample(this.addUserList);
+        async addSampleInfo() {
+            let one = []
+            let two = []
+            for (var i = 0; i < this.upImgUrl.length; i++) {
+                one.push(this.upImgUrl[i].fileName)
+            }
+            for (var i = 0; i < this.upImgUrlThree.length; i++) {
+                two.push(this.upImgUrlThree[i].fileName)
+            }
+            this.addUserList.rotateImgs = one
+            this.addUserList.thumbnailImg = this.upImgUrlTwo[0].fileName
+            this.addUserList.detailImgs = two
+            let res = await API.addSample(this.addUserList);
+            if (res.errorCode == 0) {
+                this.$message.success("添加成功", 0.5);
+                this.sampleInfo();
+            }
         },
 
         // 品牌名称
@@ -334,6 +363,22 @@ export default {
                 });
             }
         },
+        changeRotateImgsTwo({ fileList }) {
+            this.thumbnailImg = fileList;
+            if (fileList[fileList.length - 1].response) {
+                this.upImgUrlTwo = this.thumbnailImg.map((item) => {
+                    return item.response.data;
+                });
+            }
+        },
+        changeRotateImgsThree({ fileList }) {
+            this.detailImgs = fileList;
+            if (fileList[fileList.length - 1].response) {
+                this.upImgUrlThree = this.detailImgs.map((item) => {
+                    return item.response.data;
+                });
+            }
+        },
         handleCancel() {
             this.previewVisible = false;
         },
@@ -342,6 +387,28 @@ export default {
                 file.preview = await getBase64(file.originFileObj);
             }
             this.previewImage = file.url || file.preview;
+            this.previewVisible = true;
+        },
+
+        handleCancelTwo() {
+            this.previewVisible = false;
+        },
+        handleCancelThree() {
+            this.previewVisible = false;
+        },
+        async handlePreviewTwo(file) {
+            if (!file.url && !file.preview) {
+                file.preview = await getBase64(file.originFileObj);
+            }
+            this.previewImageTwo = file.url || file.preview;
+            this.previewVisible = true;
+        },
+
+        async handlePreviewThree(file) {
+            if (!file.url && !file.preview) {
+                file.preview = await getBase64(file.originFileObj);
+            }
+            this.previewImageThree = file.url || file.preview;
             this.previewVisible = true;
         },
 
