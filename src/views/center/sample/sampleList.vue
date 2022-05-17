@@ -24,7 +24,7 @@
                     </template>
                     <template slot="operation" slot-scope="text, record">
                         <div class="flex j-ey a-c">
-                            <a>{{record.state == "A" ? '上架' : '下架'}}</a> 
+                            <a>{{record.state == "A" ? '上架' : '下架'}}</a>
                             <a @click="editSample(record)">编辑</a>
                             <a style="color:red">删除</a>
                         </div>
@@ -284,6 +284,7 @@ export default {
         this.sampleTypeChange();
         this.token = localStorage.getItem('token')
     },
+
 
 
     methods: {

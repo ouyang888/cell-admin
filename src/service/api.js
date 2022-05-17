@@ -35,6 +35,13 @@ export default class ApiService {
     return request.post(api.adminUrl + `manager/customer/update`, data, { headers: { "token": token } });
   }
 
+  // 获取客户详情
+    static getCustomerDetail(id) {
+        return request.get(api.adminUrl + `manager/customer/get?id=${id}`, "", { headers: { "token": token } });
+    }
+
+
+
 
   // 品牌管理
   static brandList(pageNo, pageSize) {
@@ -118,11 +125,8 @@ export default class ApiService {
 
 
   //报备单管理 列表
-  // static filingSheetList(data) {
-  //     return request.get(api.adminUrl + `manager/report/selectPage`, data, { headers: { "token": token } });
-  // }
-  static filingSheetList(pageNo, pageSize, queryParam) {
-    return request.get(api.adminUrl + `manager/report/selectPage?pageNo=${pageNo}&pageSize=${pageSize}&queryParam=${queryParam}`, "", { headers: { "token": token } });
+  static filingSheetList(pageNo, pageSize, queryParam,nature,state) {
+    return request.get(api.adminUrl + `manager/report/selectPage?pageNo=${pageNo}&pageSize=${pageSize}&queryParam=${queryParam}&nature=${nature}&state=${state}`, "", { headers: { "token": token } });
   }
 
   //报备单管理 新增
@@ -179,8 +183,8 @@ export default class ApiService {
 
 
   //销售单列表
-  static salesList(pageNo, pageSize, queryParam) {
-    return request.get(api.adminUrl + `manager/sales/selectPage?pageNo=${pageNo}&pageSize=${pageSize}&queryParam=${queryParam}`, "", { headers: { "token": token } });
+  static salesList(pageNo, pageSize, queryParam,nature,state) {
+    return request.get(api.adminUrl + `manager/sales/selectPage?pageNo=${pageNo}&pageSize=${pageSize}&queryParam=${queryParam}&nature=${nature}&state=${state}`, "", { headers: { "token": token } });
   }
 
 }

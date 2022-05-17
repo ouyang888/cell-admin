@@ -5,24 +5,21 @@
                 <div class="manageHeader">
                     <div class="titleContent">报备单管理</div>
                     <div class="headerSearch">
-                        <a-select
-                            ref="select"
-                            v-model="value1"
-                            style="width: 160px;margin-right: 10px;"
-                        >
-                            <a-select-option value="jack">全部</a-select-option>
+                        <a-select :allowClear="true" ref="select" v-model="searchForm.state" style="width: 160px;margin-right: 10px;">
+                            <a-select-option v-for="(item,index) in selectList1" :key="index" :value="item.value">
+                                {{item.label}}
+                            </a-select-option>
                         </a-select>
-                        <a-select
-                            ref="select"
-                            v-model="value1"
-                            style="width: 160px;margin-right: 10px;"
-                        >
-                            <a-select-option value="jack">全部</a-select-option>
+                        <a-select ref="select" v-model="searchForm.nature" style="width: 160px;margin-right: 10px;">
+                            <a-select-option v-for="(item,index) in selectList2" :key="index" :value="item.value">
+                                {{item.label}}
+                            </a-select-option>
                         </a-select>
                         <a-input-search
-                            v-model="value"
+                            v-model="searchForm.searchText"
                             placeholder="客户代码、项目名称、项目地址"
                             enter-button="搜索"
+                            @search="getList"
                         />
                     </div>
                 </div>
@@ -314,7 +311,30 @@ export default {
             return {...item, align: "center"};
         });
         return {
-            value1: '',
+            select1: "",
+            select2: "",
+            selectList1:[
+                {value:"0",label:"全部"},
+                {value:"1",label:"待审核"},
+                {value:"2",label:"报备成功"},
+            ],
+            selectList2:[
+                {value:"0",label:"全部"},
+                {value:"1",label:"本区报备"},
+                {value:"2",label:"跨区报备"}
+            ],
+            searchForm:{
+                pageNo:1,
+                pageSize:10,
+                searchText: "",
+                nature:"",
+                state:""
+            },
+
+
+
+            value1:"",
+
             searchdata: {},
             totalCount: 0,
             locale: zhCN, //中文
@@ -351,7 +371,7 @@ export default {
 
     methods: {
         async getList() {
-            let res = await API.filingSheetList(1,10," ");
+            let res = await API.filingSheetList(this.searchForm.pageNo,this.searchForm.pageSize,this.searchForm.searchText,this.searchForm.nature,this.searchForm.state);
             this.dataSource = res.data.records
             this.totalCount = res.data.total
         },
