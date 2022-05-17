@@ -9,7 +9,8 @@ import uploadPicture from '@/components/upload-picture.vue';
 import '@/assets/css/common.scss';
 import mixin from "@/utils/mixin";
 import axios from "axios";
-
+import VDistpicker from 'v-distpicker'
+Vue.component('v-distpicker', VDistpicker)
 Vue.config.productionTip = false
 Vue.use(antd)
 Vue.component('page-header', pageHeader);

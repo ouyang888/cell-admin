@@ -8,7 +8,7 @@
             </div>
             <div class="content-details">
                 <div class="manageAll">
-                    <a-button type="primary" @click="addUser = true">添加二级分销</a-button>
+                    <a-button type="primary" @click="showModel(2)">添加二级分销</a-button>
                     <!--                    <a-button type="danger" style="margin-left: 10px;" @click="showDelModal">批量删除</a-button>-->
                 </div>
                 <a-table rowKey="id" :pagination="false" :data-source="dataSource" :columns="columns"
@@ -27,8 +27,8 @@
                 </a-table>
                 <div class="flex j-e a-c pagination-wrapper">
                     <span style="margin-right: 10px"> 合计{{ totalCount }}条 </span>
-                    <a-pagination class="flex j-e pagination" :current="searchdata.num" :total="totalCount"
-                        :locale="locale" show-size-changer @change="changePage" @showSizeChange="couponSizeChange" />
+                    <a-pagination class="flex j-e pagination" v-model="pageNo" :total="totalCount" :locale="locale"
+                        show-less-items @change="changePage" @showSizeChange="couponSizeChange" />
                 </div>
             </div>
         </div>
@@ -39,14 +39,14 @@
         </a-modal>
 
         <!-- 新增客户 -->
-        <a-modal cancelText="取消" title="添加二级分销" v-model="addUser">
+        <a-modal cancelText="取消" @ok="addSales" title="添加二级分销" v-model="addUser">
             <div class="flex j-c a-c" style="margin-top: 20px">
                 <div style="width: 120px">分销区域名：</div>
-                <a-input v-model="addUserList.password" placeholder="输入15字以内的区域名"></a-input>
+                <a-input v-model="salesList.name" maxLength="15" placeholder="输入15字以内的区域名"></a-input>
             </div>
             <div class="flex j-c a-c" style="margin-top: 20px">
                 <div style="width: 120px">分销代号：</div>
-                <a-input v-model="addUserList.password" placeholder="输入区域10以内的数字代号"></a-input>
+                <a-input v-model="salesList.code" maxLength="10" placeholder="输入区域10以内的数字代号"></a-input>
             </div>
         </a-modal>
     </div>
@@ -60,25 +60,23 @@ export default {
         let columns = [
             {
                 title: "分销区域名",
-                width: "90px",
+                dataIndex: "name",
+                scopedSlots: { customRender: "name" },
             },
             {
                 title: "区域代号",
-                dataIndex: "userName",
-                ellipsis: true,
-                width: "100px",
-                scopedSlots: { customRender: "userName" },
+                dataIndex: "code",
+                scopedSlots: { customRender: "code" },
             },
             {
                 title: "分销级别",
-                dataIndex: "phone",
-                scopedSlots: { customRender: "phone" },
-                width: 120,
+                dataIndex: "level",
+                scopedSlots: { customRender: "level" },
             },
             {
                 title: "客户数",
+                dataIndex: "phone",
                 scopedSlots: { customRender: "phone" },
-                width: 120,
             },
             {
                 title: "操作",
@@ -106,6 +104,9 @@ export default {
             selectedRowKeys: [],
             deleteOpen: false,
             addUserList: {},
+            pageNo: 1,
+            pageSize: 10,
+            salesList: {},
         }
     },
     mounted() {
@@ -127,11 +128,26 @@ export default {
         showDelModal() {
             this.deleteOpen = true;
         },
-
+        showModel(index) {
+            this.addUser = true
+        },
         async selectTreeInfo() {
             let res = await API.selectTreeList();
             this.dataSource = res.data.records;
             this.totalCount = res.data.total
+        },
+
+        //添加
+        async addSales() {
+            this.salesList.level = 2
+            let res = await API.addSalesArea(this.salesList);
+            if (res.errorCode == 0) {
+                this.$message.success("添加成功", 1);
+                this.salesList = {}
+                this.selectTreeInfo();
+            } else {
+                this.$message.error(res.msg);
+            }
         },
     }
 }

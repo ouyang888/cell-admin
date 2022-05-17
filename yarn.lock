@@ -8763,6 +8763,13 @@
   "resolved" "https://registry.nlark.com/uuid/download/uuid-3.4.0.tgz?cache=0&sync_timestamp=1622213136953&other_urls=https%3A%2F%2Fregistry.nlark.com%2Fuuid%2Fdownload%2Fuuid-3.4.0.tgz"
   "version" "3.4.0"
 
+"v-distpicker@^1.2.13":
+  "integrity" "sha512-dQN7cR7BhHPrmZ0dBngFm69Fgc3u22uOwJDM4vc4n3mdGDI6PvKa/0lCjPkDrU8G1pv9TO+Fb68wmX2ItyI1mQ=="
+  "resolved" "https://registry.npmjs.org/v-distpicker/-/v-distpicker-1.2.13.tgz"
+  "version" "1.2.13"
+  dependencies:
+    "vue" "^2.6.10"
+
 "v8-compile-cache@^2.0.3":
   "integrity" "sha1-LeGWGMZtwkfc+2+ZM4A12CRaLO4="
   "resolved" "https://registry.npm.taobao.org/v8-compile-cache/download/v8-compile-cache-2.3.0.tgz?cache=0&sync_timestamp=1614993639567&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fv8-compile-cache%2Fdownload%2Fv8-compile-cache-2.3.0.tgz"
@@ -8869,7 +8876,7 @@
   "resolved" "https://registry.npm.taobao.org/vue-template-es2015-compiler/download/vue-template-es2015-compiler-1.9.1.tgz"
   "version" "1.9.1"
 
-"vue@^2 || ^3.0.0-0", "vue@^2.0.0", "vue@^2.6.0", "vue@^2.6.11", "vue@>=2.5.0":
+"vue@^2 || ^3.0.0-0", "vue@^2.0.0", "vue@^2.6.0", "vue@^2.6.10", "vue@^2.6.11", "vue@>=2.5.0":
   "integrity" "sha1-5RqlJQJQ1Wmj+606ilpofWA24jU="
   "resolved" "https://registry.npmmirror.com/vue/download/vue-2.6.14.tgz"
   "version" "2.6.14"

@@ -5,25 +5,13 @@
                 <div class="manageHeader">
                     <div class="titleContent">销售单列表</div>
                     <div class="headerSearch">
-                        <a-select
-                            ref="select"
-                            v-model="value1"
-                            style="width: 160px;margin-right: 10px;"
-                        >
+                        <a-select ref="select" v-model="value1" style="width: 160px;margin-right: 10px;">
                             <a-select-option value="jack">全部</a-select-option>
                         </a-select>
-                        <a-select
-                            ref="select"
-                            v-model="value1"
-                            style="width: 160px;margin-right: 10px;"
-                        >
+                        <a-select ref="select" v-model="value1" style="width: 160px;margin-right: 10px;">
                             <a-select-option value="jack">全部</a-select-option>
                         </a-select>
-                        <a-input-search
-                            v-model="value"
-                            placeholder="客户代码"
-                            enter-button="搜索"
-                        />
+                        <a-input-search v-model="value" placeholder="客户代码" enter-button="搜索" />
                     </div>
                 </div>
             </div>
@@ -32,24 +20,14 @@
                     <a-button type="primary">导出</a-button>
                     <a-button type="danger" style="margin-left: 10px;" @click="showDelModal">批量删除</a-button>
                 </div>
-                <a-table
-                    rowKey="id"
-                    :pagination="false"
-                    :data-source="dataSource"
-                    :columns="columns"
-                    :loading="isloading"
-                    :row-selection="{ selectedRowKeys: selectedRowKeys }"
-                    :scroll="{ y: contentHeight - 369 }"
-                >
+                <a-table rowKey="id" :pagination="false" :data-source="dataSource" :columns="columns"
+                    :loading="isloading" :row-selection="{ selectedRowKeys: selectedRowKeys }"
+                    :scroll="{ y: contentHeight - 369 }">
                     <template slot="name" slot-scope="text, record">
                         {{ record.key }}
                         <div class="overflow-one" style="max-width: 250px"></div>
                     </template>
-                    <template
-                        slot="userName"
-                        style="min-width: 100px"
-                        slot-scope="userName"
-                    >
+                    <template slot="userName" style="min-width: 100px" slot-scope="userName">
                         {{ userName }}
                     </template>
                     <template slot="phone" slot-scope="phone">
@@ -66,23 +44,11 @@
                             <a v-permission="'admin:setting:userList:disable'">查看模板消息</a>
                         </div>
                     </template>
-                    <!--                    <template slot="enabled" slot-scope="text">-->
-                    <!--                        <div :style="{ color: text == 0 ? 'red' : '' }">-->
-                    <!--                            {{ text == 0 ? "禁用" : "正常" }}-->
-                    <!--                        </div>-->
-                    <!--                    </template>-->
                 </a-table>
                 <div class="flex j-e a-c pagination-wrapper">
                     <span style="margin-right: 10px"> 合计{{ totalCount }}条 </span>
-                    <a-pagination
-                        class="flex j-e pagination"
-                        :current="searchdata.num"
-                        :total="totalCount"
-                        :locale="locale"
-                        show-size-changer
-                        @change="changePage"
-                        @showSizeChange="couponSizeChange"
-                    />
+                    <a-pagination class="flex j-e pagination" :current="searchdata.num" :total="totalCount"
+                        :locale="locale" show-size-changer @change="changePage" @showSizeChange="couponSizeChange" />
                 </div>
             </div>
         </div>
@@ -106,7 +72,7 @@
                 </a-radio-group>
             </div>
             <div>
-                <a-textarea placeholder="请输入100字以内驳回原因" allow-clear :autosize="{minRows: 3}" />
+                <a-textarea placeholder="请输入100字以内驳回原因" allow-clear :autosize="{ minRows: 3 }" />
             </div>
         </a-modal>
 
@@ -134,73 +100,73 @@ export default {
                 dataIndex: "userName",
                 ellipsis: true,
                 width: "100px",
-                scopedSlots: {customRender: "userName"},
+                scopedSlots: { customRender: "userName" },
             },
             {
                 title: "客户名",
                 dataIndex: "userName",
                 ellipsis: true,
                 width: "100px",
-                scopedSlots: {customRender: "userName"},
+                scopedSlots: { customRender: "userName" },
             },
             {
                 title: "业主姓名",
                 dataIndex: "phone",
-                scopedSlots: {customRender: "phone"},
+                scopedSlots: { customRender: "phone" },
                 width: 120,
             },
             {
                 title: "业主电话",
-                scopedSlots: {customRender: "phone"},
+                scopedSlots: { customRender: "phone" },
                 width: 120,
             },
             {
                 title: "销售渠道",
-                scopedSlots: {customRender: "phone"},
+                scopedSlots: { customRender: "phone" },
                 width: 120,
             },
             {
                 title: "用砖地址",
-                scopedSlots: {customRender: "phone"},
+                scopedSlots: { customRender: "phone" },
                 width: 120,
             },
             {
                 title: "订单日期",
-                scopedSlots: {customRender: "phone"},
+                scopedSlots: { customRender: "phone" },
                 width: 120,
             },
             {
                 title: "送货日期",
                 width: 180,
                 dataIndex: "createTime",
-                scopedSlots: {customRender: "createTime"},
+                scopedSlots: { customRender: "createTime" },
             },
             {
                 title: "录单时间",
                 width: 180,
-                scopedSlots: {customRender: "createTime"},
+                scopedSlots: { customRender: "createTime" },
             },
             {
                 title: "销售性质",
                 width: 180,
-                scopedSlots: {customRender: "createTime"},
+                scopedSlots: { customRender: "createTime" },
             },
             {
                 title: "销售单状态",
                 dataIndex: "role",
                 width: "120px",
                 ellipsis: true,
-                scopedSlots: {customRender: "role"},
+                scopedSlots: { customRender: "role" },
             },
             {
                 title: "操作",
                 width: "190px",
                 fixed: "right",
-                scopedSlots: {customRender: "operation"},
+                scopedSlots: { customRender: "operation" },
             },
         ];
         columns = columns.map((item) => {
-            return {...item, align: "center"};
+            return { ...item, align: "center" };
         });
         return {
             value1: '',
@@ -217,7 +183,7 @@ export default {
             // new
             selectedRowKeys: [],
             deleteOpen: false,
-            addUserList:{},
+            addUserList: {},
             fileList: [],
             modelMsgSend: [],
             modelColumns: [
@@ -229,6 +195,10 @@ export default {
                 }
             ],
         }
+    },
+
+      mounted() {
+        this.salesInfo();
     },
 
     methods: {
@@ -244,8 +214,15 @@ export default {
             this.getSysUserList();
         },
         //删除弹出
-        showDelModal(){
+        showDelModal() {
             this.deleteOpen = true;
+        },
+
+        async salesInfo(){
+            let res = await API.salesList(this.pageNo, this.pageSize, this.searchValue);
+            // console.log('res2222',res)
+            this.dataSource = res.data.records;
+            this.totalCount = res.data.total
         },
     }
 }
@@ -258,11 +235,11 @@ export default {
     align-items: center;
 }
 
-.headerSearch{
+.headerSearch {
     display: flex;
 }
 
-.manageAll{
+.manageAll {
     display: flex;
     justify-content: flex-end;
     align-items: center;

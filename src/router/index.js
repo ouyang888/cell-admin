@@ -54,7 +54,7 @@ const routes = [
                 path: 'sample',
                 name: 'sample',
                 meta: {
-                    preMenuUrl: "/center/userManagement"
+                    preMenuUrl: "/center/userList"
                 },
                 component: () => import('@/views/center/userManagement/sample.vue')
             },

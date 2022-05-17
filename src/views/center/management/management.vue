@@ -46,7 +46,7 @@
                 </a-table>
                 <div class="flex j-e a-c pagination-wrapper">
                     <span style="margin-right: 10px"> 合计{{ totalCount }}条 </span>
-                    <a-pagination class="flex j-e pagination" v-model="pageNo" @change="changePage"  :total="totalCount"
+                    <a-pagination class="flex j-e pagination" v-model="pageNo" @change="changePage" :total="totalCount"
                         :locale="locale" show-less-items />
                 </div>
             </div>
@@ -64,7 +64,7 @@
             </div>
             <div class="flex j-c a-c" style="margin-top: 20px">
                 <div style="width: 100px">密码：</div>
-                <a-input  v-model="addUserList.pwdMd5" placeholder="请输入密码"></a-input>
+                <a-input v-model="addUserList.pwdMd5" placeholder="请输入密码"></a-input>
             </div>
             <span style="margin-top: 5px;font-size:12px;margin-left: 80px;">管理员登录后台得密码，请填写6-20位英文或数字</span>
             <div class="flex j-c a-c" style="margin-top: 20px">
@@ -220,6 +220,8 @@ export default {
                 this.addUser = false
                 this.addUserList = {}
                 this.userList();
+            } else {
+                this.$message.error(res.msg, 1);
             }
         },
 
@@ -245,6 +247,8 @@ export default {
                 this.addUser = false
                 this.addUserList = {}
                 this.userList();
+            }else {
+                this.$message.error(res.msg, 1);
             }
         },
 
@@ -273,6 +277,8 @@ export default {
                 this.ids = [];
                 this.userList();
                 this.deleteOpen = false;
+            }else {
+                this.$message.error(res.msg, 1);
             }
         },
 
