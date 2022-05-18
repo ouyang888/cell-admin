@@ -273,8 +273,7 @@ export default {
         // 编辑
         goEdit(data){
             let {id,reportType} = {...data}
-            let params ={id,reportType}
-            this.$router.push({ path: "/center/addReporting", query: params });
+            this.$router.push({ path: "/center/addReporting", query: {id,reportType} });
         },
         // 分页改变
         changePage(page) {
