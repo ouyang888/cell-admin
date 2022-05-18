@@ -12,11 +12,11 @@
             </div>
             <div class="content-details">
                 <div class="manageAll">
-                    <a-button type="primary" @click="addUser = true">添加</a-button>
-                    <a-button type="danger" style="margin-left: 10px;" @click="showDelModal">批量删除</a-button>
+                    <a-button type="primary" @click="showAddSample">添加</a-button>
+                    <a-button type="danger" style="margin-left: 10px;" @click="delMoreHandle">批量删除</a-button>
                 </div>
                 <a-table rowKey="id" :pagination="false" :data-source="dataSource" :columns="columns"
-                    :loading="isloading" :row-selection="{ selectedRowKeys: selectedRowKeys }"
+                    :loading="isloading" :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
                     :scroll="{ x: 1400, y: 1300 }">
 
                     <template slot="state" slot-scope="state">
@@ -24,9 +24,9 @@
                     </template>
                     <template slot="operation" slot-scope="text, record">
                         <div class="flex j-ey a-c">
-                            <a>{{record.state == "A" ? '上架' : '下架'}}</a>
+                            <a @click="changeState(record)">{{ record.state == "A" ? '下架' : '上架' }}</a>
                             <a @click="editSample(record)">编辑</a>
-                            <a style="color:red">删除</a>
+                            <a style="color:red" @click="showDelModal(record.id)">删除</a>
                         </div>
                     </template>
                 </a-table>
@@ -39,7 +39,7 @@
         </div>
 
         <!--   删除     -->
-        <a-modal v-model="deleteOpen" title="确认删除">
+        <a-modal @ok="delSampleList" v-model="deleteOpen" title="确认删除">
             <p>此操作不可逆，请确认</p>
         </a-modal>
 
@@ -102,17 +102,17 @@
             <div class="flex j-c a-c" style="margin-top: 20px">
                 <div style="width: 100px">状态：</div>
                 <a-radio-group v-model="addUserList.state" name="radioGroup" style="width: 100%;">
-                    <a-radio value="A">可用</a-radio>
-                    <a-radio value="D">禁用</a-radio>
+                    <a-radio value="A">上架</a-radio>
+                    <a-radio value="D">下架</a-radio>
                 </a-radio-group>
             </div>
-            <!-- v-if="addUserList.rotateImgs.length < 5" -->
+            <!-- v-if="addUserList.rotateImgList.length < 5" -->
             <div class="flex j-c a-c" style="margin-top: 20px">
                 <div style="width: 100px">轮播图片：</div>
                 <div style="width: 100%">
-                    <a-upload @change="changeRotateImgs" @preview="handlePreview" :file-list="rotateImgs"
+                    <a-upload @change="changeRotateImgs" @preview="handlePreview" :file-list="rotateImgList"
                         :action="getupload" :headers="{ 'token': token }" list-type="picture-card">
-                        <div v-if="rotateImgs.length < 5">
+                        <div v-if="rotateImgList.length < 5">
                             <a-icon type="plus" />
                             <div style="margin-top: 8px">上传图片</div>
                         </div>
@@ -144,9 +144,9 @@
             <div class="flex j-c a-c" style="margin-top: 20px">
                 <div style="width: 100px">详情图片：</div>
                 <div style="width: 100%">
-                    <a-upload :file-list="detailImgs" :headers="{ 'token': token }" :action="getupload"
+                    <a-upload :file-list="detailImgList" :headers="{ 'token': token }" :action="getupload"
                         @change="changeRotateImgsThree" @preview="handlePreviewThree" list-type="picture-card">
-                        <div v-if="detailImgs.length < 20">
+                        <div v-if="detailImgList.length < 20">
                             <a-icon type="plus" />
                             <div style="margin-top: 8px">上传图片</div>
                         </div>
@@ -265,9 +265,9 @@ export default {
             brandList: "",
             sampleTypeList: "",
             token: "",
-            rotateImgs: [],
+            rotateImgList: [],
             thumbnailImg: [],
-            detailImgs: [],
+            detailImgList: [],
             previewVisible: false,
             previewImage: '',
             previewImageTwo: "",
@@ -290,18 +290,29 @@ export default {
     methods: {
         // 分页改变
         changePage(page) {
-            this.searchdata.num = page;
-            this.getSysUserList();
+            this.pageNo = page;
+            this.sampleInfo();
         },
         // 分页的回调
         couponSizeChange(current, size) {
-            this.searchdata.num = 1;
-            this.searchdata.size = size;
-            this.getSysUserList();
+            this.pageNo = 1;
+            this.pageSize = size;
+            this.sampleInfo();
         },
         //删除弹出
-        showDelModal() {
+        showDelModal(id) {
+            this.ids = []
             this.deleteOpen = true;
+            Array.isArray(id) ? this.ids = id : this.ids.push(id);
+        },
+
+        // 批量删除
+        delMoreHandle() {
+            if (this.selectedRowKeys.length <= 0) {
+                this.$message.warning("请选择要删除条目", 1);
+                return
+            }
+            this.showDelModal(this.selectedRowKeys)
         },
         //选择品牌名称
         changeBrandId(value) {
@@ -319,9 +330,58 @@ export default {
         },
         //编辑样品
         editSample(item) {
-            console.log("item",item)
             this.addUser = true
             this.addUserList = item
+        },
+        //添加样品
+        showAddSample() {
+            this.addUser = true
+            this.addUserList = {}
+            this.rotateImgList = []
+            this.thumbnailImg = []
+            this.detailImgList = [];
+            this.brandList = ""
+            this.sampleTypeList = ""
+        },
+
+        onSelectChange(selectedRowKeys) {
+            this.selectedRowKeys = selectedRowKeys;
+        },
+
+
+        //点击上架下架
+        async changeState(item) {
+            let code = ""
+            if (item.state == "D") {
+                code = "A"
+            } else if (item.state == "A") {
+                code = "D"
+            }
+            let list = {
+                id: item.id,
+                name: item.name,
+                state: code
+            }
+            let res = await API.updateSample(list);
+            if (res.errorCode == 0) {
+                this.$message.success("修改成功", 0.5);
+                this.sampleInfo();
+            }
+        },
+
+
+        //删除样品
+        async delSampleList() {
+            let res = await API.delSample(this.selectedRowKeys.length != 0 ? this.selectedRowKeys : this.ids);
+            if (res.errorCode == 0) {
+                this.$message.success("删除成功", 0.5);
+                this.selectedRowKeys = [];
+                this.ids = [];
+                this.sampleInfo();
+                this.deleteOpen = false;
+            } else {
+                this.$message.error(res.msg, 1);
+            }
         },
 
         //新增样品
@@ -334,13 +394,20 @@ export default {
             for (var i = 0; i < this.upImgUrlThree.length; i++) {
                 two.push(this.upImgUrlThree[i].fileName)
             }
-            this.addUserList.rotateImgs = one
+            this.addUserList.rotateImgList = one
             this.addUserList.thumbnailImg = this.upImgUrlTwo[0].fileName
-            this.addUserList.detailImgs = two
+            this.addUserList.detailImgList = two
             let res = await API.addSample(this.addUserList);
             if (res.errorCode == 0) {
                 this.$message.success("添加成功", 0.5);
+                this.addUser = false;
                 this.sampleInfo();
+                this.addUserList = {}
+                this.rotateImgList = []
+                this.thumbnailImg = []
+                this.detailImgList = []
+                this.brandList = ""
+                this.sampleTypeList = ""
             }
         },
 
@@ -357,9 +424,9 @@ export default {
         },
 
         changeRotateImgs({ fileList }) {
-            this.rotateImgs = fileList;
+            this.rotateImgList = fileList;
             if (fileList[fileList.length - 1].response) {
-                this.upImgUrl = this.rotateImgs.map((item) => {
+                this.upImgUrl = this.rotateImgList.map((item) => {
                     return item.response.data;
                 });
             }
@@ -373,9 +440,9 @@ export default {
             }
         },
         changeRotateImgsThree({ fileList }) {
-            this.detailImgs = fileList;
+            this.detailImgList = fileList;
             if (fileList[fileList.length - 1].response) {
-                this.upImgUrlThree = this.detailImgs.map((item) => {
+                this.upImgUrlThree = this.detailImgList.map((item) => {
                     return item.response.data;
                 });
             }

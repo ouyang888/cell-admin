@@ -20,11 +20,11 @@
           :defaultOpenKeys="['工单管理','基础数据','系统管理','设置']"
           v-model="searchKeys"
         >
-          <a-menu-item key="/center/index">
+          <!-- <a-menu-item key="/center/index">
             <router-link to="/center/index"
               ><a-icon type="pie-chart" /><span>管理首页</span>
             </router-link>
-          </a-menu-item>
+          </a-menu-item> -->
 
            <a-menu-item key="/center/management">
             <router-link to="/center/management"

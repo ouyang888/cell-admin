@@ -29,7 +29,6 @@ Vue.directive('permission', {
 })
 Vue.mixin(mixin)
 
-
 new Vue({
   router,
   store,

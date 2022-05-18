@@ -25,7 +25,7 @@
             <div class="content-details">
                 <div class="manageAll">
                     <a-button type="primary" @click="adduserModel(0)">添加</a-button>
-                    <a-button type="danger" style="margin-left: 10px;" @click="showDelModal">批量删除</a-button>
+                    <a-button type="danger" style="margin-left: 10px;" @click="delMoreHandle">批量删除</a-button>
                 </div>
                 <a-table rowKey="id" :pagination="false" :data-source="dataSource" :columns="columns"
                     :loading="isloading" :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
@@ -187,6 +187,11 @@ export default {
     },
     mounted() {
         this.userList();
+        // if (this.$route.query.islogin == "true") {
+        //     console.log("99999999999000000000")
+        //     window.location.reload()
+        //     this.$route.query.islogin == "false"
+        // }
     },
 
     methods: {
@@ -194,7 +199,16 @@ export default {
         showDelModal(id) {
             this.ids = []
             this.deleteOpen = true;
-            this.ids.push(id)
+            Array.isArray(id) ? this.ids = id : this.ids.push(id);
+        },
+
+         // 批量删除
+        delMoreHandle() {
+            if (this.selectedRowKeys.length <= 0) {
+                this.$message.warning("请选择要删除条目", 1);
+                return
+            }
+            this.showDelModal(this.selectedRowKeys)
         },
 
 
@@ -247,7 +261,7 @@ export default {
                 this.addUser = false
                 this.addUserList = {}
                 this.userList();
-            }else {
+            } else {
                 this.$message.error(res.msg, 1);
             }
         },
@@ -277,7 +291,7 @@ export default {
                 this.ids = [];
                 this.userList();
                 this.deleteOpen = false;
-            }else {
+            } else {
                 this.$message.error(res.msg, 1);
             }
         },

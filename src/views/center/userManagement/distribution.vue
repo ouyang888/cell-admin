@@ -12,16 +12,12 @@
                     <!--                    <a-button type="danger" style="margin-left: 10px;" @click="showDelModal">批量删除</a-button>-->
                 </div>
                 <a-table rowKey="id" :pagination="false" :data-source="dataSource" :columns="columns"
-                    :loading="isloading" :row-selection="{ selectedRowKeys: selectedRowKeys }"
-                    :scroll="{ y: contentHeight - 369 }">
-                    <template slot="name" slot-scope="text, record">
-                        {{ record.key }}
-                        <div class="overflow-one" style="max-width: 250px"></div>
-                    </template>
-                    <template slot="operation">
+                    :loading="isloading" :scroll="{ y: contentHeight - 369 }">
+
+                    <template slot="operation" slot-scope="lineData">
                         <div class="flex j-ey a-c">
-                            <a>添加三级分销</a>
-                            <a>删除</a>
+                            <a @click="showModelThree(3, lineData)">添加三级分销</a>
+                            <a @click="showDelModal(lineData.id)" style="color:red">删除</a>
                         </div>
                     </template>
                 </a-table>
@@ -34,19 +30,19 @@
         </div>
 
         <!--   删除     -->
-        <a-modal v-model="deleteOpen" title="确认删除">
+        <a-modal @ok="delSales" v-model="deleteOpen" title="确认删除">
             <p>此操作不可逆，请确认</p>
         </a-modal>
 
         <!-- 新增客户 -->
-        <a-modal cancelText="取消" @ok="addSales" title="添加二级分销" v-model="addUser">
+        <a-modal cancelText="取消" @ok="addSales" :title="cus == '2' ? '添加二级分销' : '添加三级分销'" v-model="addUser">
             <div class="flex j-c a-c" style="margin-top: 20px">
                 <div style="width: 120px">分销区域名：</div>
-                <a-input v-model="salesList.name" maxLength="15" placeholder="输入15字以内的区域名"></a-input>
+                <a-input v-model="salesList.name" :maxLength="15" placeholder="输入15字以内的区域名"></a-input>
             </div>
             <div class="flex j-c a-c" style="margin-top: 20px">
                 <div style="width: 120px">分销代号：</div>
-                <a-input v-model="salesList.code" maxLength="10" placeholder="输入区域10以内的数字代号"></a-input>
+                <a-input v-model="salesList.code" :maxLength="10" placeholder="输入区域10以内的数字代号"></a-input>
             </div>
         </a-modal>
     </div>
@@ -61,27 +57,30 @@ export default {
             {
                 title: "分销区域名",
                 dataIndex: "name",
+                width: 200,
                 scopedSlots: { customRender: "name" },
             },
             {
                 title: "区域代号",
                 dataIndex: "code",
+                width: 200,
                 scopedSlots: { customRender: "code" },
             },
             {
                 title: "分销级别",
                 dataIndex: "level",
+                width: 200,
                 scopedSlots: { customRender: "level" },
             },
             {
                 title: "客户数",
-                dataIndex: "phone",
-                scopedSlots: { customRender: "phone" },
+                dataIndex: "customerNumber",
+                width: 200,
+                scopedSlots: { customRender: "customerNumber" },
             },
             {
                 title: "操作",
-                width: "190px",
-                fixed: "right",
+                width: 200,
                 scopedSlots: { customRender: "operation" },
             },
         ];
@@ -107,42 +106,69 @@ export default {
             pageNo: 1,
             pageSize: 10,
             salesList: {},
+            cus: "",
+            delid: ""
         }
     },
     mounted() {
         this.selectTreeInfo();
     },
     methods: {
-        // // 分页改变
-        // changePage(page) {
-        //     this.searchdata.num = page;
-        //     this.getSysUserList();
-        // },
-        // // 分页的回调
-        // couponSizeChange(current, size) {
-        //     this.searchdata.num = 1;
-        //     this.searchdata.size = size;
-        //     this.getSysUserList();
-        // },
+        // 分页改变
+        changePage(page) {
+            this.pageNo = page;
+            this.selectTreeInfo();
+        },
+        // 分页的回调
+        couponSizeChange(current, size) {
+            this.pageNo = 1;
+            this.pageSize = size;
+            this.selectTreeInfo();
+        },
+
+
+
+
         //删除弹出
-        showDelModal() {
+        showDelModal(id) {
+            this.delid = id
             this.deleteOpen = true;
         },
+        showModelThree(index, item) {
+            this.cus = index
+            this.parent = item.id
+            this.addUser = true
+        },
         showModel(index) {
+            this.cus = index
             this.addUser = true
         },
         async selectTreeInfo() {
-            let res = await API.selectTreeList();
+            let res = await API.selectTreeList(this.pageNo, this.pageSize);
             this.dataSource = res.data.records;
             this.totalCount = res.data.total
         },
 
+        //删除
+        async delSales() {
+            let res = await API.delSalesArea({ id: this.delid })
+            if (res.errorCode == 0) {
+                this.$message.success("删除成功", 1);
+                this.selectTreeInfo();
+                this.deleteOpen = false;
+            }
+        },
+
         //添加
         async addSales() {
-            this.salesList.level = 2
+            this.salesList.level = this.cus
+            if (this.cus == 3) {
+                this.salesList.parentId = this.parent
+            }
             let res = await API.addSalesArea(this.salesList);
             if (res.errorCode == 0) {
                 this.$message.success("添加成功", 1);
+                this.addUser = false;
                 this.salesList = {}
                 this.selectTreeInfo();
             } else {

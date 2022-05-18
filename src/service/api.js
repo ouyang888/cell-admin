@@ -36,9 +36,9 @@ export default class ApiService {
   }
 
   // 获取客户详情
-    static getCustomerDetail(id) {
-        return request.get(api.adminUrl + `manager/customer/get?id=${id}`, "", { headers: { "token": token } });
-    }
+  static getCustomerDetail(id) {
+    return request.get(api.adminUrl + `manager/customer/get?id=${id}`, "", { headers: { "token": token } });
+  }
 
 
 
@@ -66,14 +66,20 @@ export default class ApiService {
 
 
   //分销区域管理
-  static selectTreeList() {
-    return request.get(api.adminUrl + `manager/sales/area/selectTree`, "", { headers: { "token": token } });
+  static selectTreeList(pageNo, pageSize) {
+    return request.get(api.adminUrl + `manager/sales/area/selectPage?pageNo=${pageNo}&pageSize=${pageSize}`, "", { headers: { "token": token } });
   }
 
 
   //分销区域新增
   static addSalesArea(data) {
     return request.post(api.adminUrl + `manager/sales/area`, data, { headers: { "token": token } });
+  }
+
+
+  //分销区域删除
+  static delSalesArea(data) {
+    return request.post(api.adminUrl + `manager/sales/area/delete`, data, { headers: { "token": token } });
   }
 
 
@@ -86,6 +92,19 @@ export default class ApiService {
   static addSample(data) {
     return request.post(api.adminUrl + `manager/sample`, data, { headers: { "token": token } });
   }
+
+   //修改样品
+   static updateSample(data) {
+    return request.post(api.adminUrl + `manager/sample/update`, data, { headers: { "token": token } });
+  }
+
+
+  //删除样品
+  static delSample(data) {
+    return request.post(api.adminUrl + `manager/sample/delete`, data, { headers: { "token": token } });
+  }
+
+
 
   // 品牌下拉列表
   static brandChange() {
@@ -125,7 +144,7 @@ export default class ApiService {
 
 
   //报备单管理 列表
-  static filingSheetList(pageNo, pageSize, queryParam,nature,state) {
+  static filingSheetList(pageNo, pageSize, queryParam, nature, state) {
     return request.get(api.adminUrl + `manager/report/selectPage?pageNo=${pageNo}&pageSize=${pageSize}&queryParam=${queryParam}&nature=${nature}&state=${state}`, "", { headers: { "token": token } });
   }
 
@@ -183,8 +202,19 @@ export default class ApiService {
 
 
   //销售单列表
-  static salesList(pageNo, pageSize, queryParam,nature,state) {
+  static salesList(pageNo, pageSize, queryParam, nature, state) {
     return request.get(api.adminUrl + `manager/sales/selectPage?pageNo=${pageNo}&pageSize=${pageSize}&queryParam=${queryParam}&nature=${nature}&state=${state}`, "", { headers: { "token": token } });
   }
+
+  //客户样品列表
+  static selectCustomerSamplelList(pageNo, pageSize, customerId) {
+    return request.get(api.adminUrl + `manager/sample/selectCustomerSample?pageNo=${pageNo}&pageSize=${pageSize}&customerId=${customerId}`, "", { headers: { "token": token } });
+  }
+
+  //新增客户样品
+  static sampleRelation(data) {
+    return request.post(api.adminUrl + `manager/sample/relation`, data, { headers: { "token": token } });
+  }
+
 
 }

@@ -37,7 +37,7 @@ export default {
             let res = await api.managerLogin(this.formState)
             if (res.errorCode == 0) {
                 localStorage.setItem("token", res.data.token)
-                this.$router.push({ path: '/' })
+                this.$router.push({ path: '/center/management' })
                 // }
             } else {
                 this.$message.error(res.msg);

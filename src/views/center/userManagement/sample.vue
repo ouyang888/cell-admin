@@ -5,37 +5,23 @@
                 <div class="manageHeader">
                     <div class="titleContent">样品清单</div>
                     <div class="headerSearch">
-                        <a-input-search
-                            v-model="value"
-                            placeholder="样品名"
-                            enter-button="搜索"
-                        />
+                        <a-input-search v-model="value" placeholder="样品名" enter-button="搜索" />
                     </div>
                 </div>
             </div>
             <div class="content-details">
                 <div class="manageAll">
-                    <a-button type="primary" @click="addUser = true">添加</a-button>
+                    <a-button type="primary" @click="addUserModel">添加</a-button>
                     <a-button type="danger" style="margin-left: 10px;" @click="showDelModal">批量删除</a-button>
                 </div>
-                <a-table
-                    rowKey="id"
-                    :pagination="false"
-                    :data-source="dataSource"
-                    :columns="columns"
-                    :loading="isloading"
-                    :row-selection="{ selectedRowKeys: selectedRowKeys }"
-                    :scroll="{ y: contentHeight - 369 }"
-                >
+                <a-table rowKey="id" :pagination="false" :data-source="dataSource" :columns="columns"
+                    :loading="isloading" :row-selection="{ selectedRowKeys: selectedRowKeys }"
+                    :scroll="{ y: contentHeight - 369 }">
                     <template slot="name" slot-scope="text, record">
                         {{ record.key }}
                         <div class="overflow-one" style="max-width: 250px"></div>
                     </template>
-                    <template
-                        slot="userName"
-                        style="min-width: 100px"
-                        slot-scope="userName"
-                    >
+                    <template slot="userName" style="min-width: 100px" slot-scope="userName">
                         {{ userName }}
                     </template>
                     <template slot="phone" slot-scope="phone">
@@ -57,15 +43,8 @@
                 </a-table>
                 <div class="flex j-e a-c pagination-wrapper">
                     <span style="margin-right: 10px"> 合计{{ totalCount }}条 </span>
-                    <a-pagination
-                        class="flex j-e pagination"
-                        :current="searchdata.num"
-                        :total="totalCount"
-                        :locale="locale"
-                        show-size-changer
-                        @change="changePage"
-                        @showSizeChange="couponSizeChange"
-                    />
+                    <a-pagination class="flex j-e pagination" v-model="pageNo" :total="totalCount" :locale="locale"
+                        show-less-items @change="changePage" @showSizeChange="couponSizeChange" />
                 </div>
             </div>
         </div>
@@ -75,25 +54,13 @@
             <p>此操作不可逆，请确认</p>
         </a-modal>
 
-        <a-modal
-            cancelText="取消"
-            okText="保存"
-            title="添加样品"
-            :footer="null"
-            width="40%"
-            v-model="addUser"
-        >
+        <a-modal cancelText="取消" okText="保存" title="添加样品" :footer="null" width="40%" v-model="addUser">
             <div class="headerSearch" style="display: flex;margin-bottom: 20px">
-                <a-input-search
-                    v-model="value"
-                    placeholder="样品名"
-                    enter-button="搜索"
-                />
-
-                <a-button type="primary" style="margin-left: 15px;">确定添加</a-button>
+                <a-input-search v-model="searchValueSample" placeholder="样品名" @search="sampleInfo" enter-button="搜索" />
+                <a-button @click="addSampleRelation" type="primary" style="margin-left: 15px;">确定添加</a-button>
             </div>
-
-            <a-table :dataSource="addDataSource" :columns="addCouml" :row-selection="{ selectedRowKeys: selectedRowKeys }" />
+            <a-table rowKey="id" :dataSource="addDataSource" :columns="addCouml"
+                :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChangeSample }" />
 
         </a-modal>
     </div>
@@ -101,7 +68,7 @@
 
 <script>
 import zhCN from "ant-design-vue/lib/locale-provider/zh_CN";
-
+import API from "../../../service/api";
 export default {
     data() {
         let columns = [
@@ -110,43 +77,43 @@ export default {
                 dataIndex: "userName",
                 ellipsis: true,
                 width: "100px",
-                scopedSlots: {customRender: "userName"},
+                scopedSlots: { customRender: "userName" },
             },
             {
                 title: "型号",
                 dataIndex: "phone",
-                scopedSlots: {customRender: "phone"},
+                scopedSlots: { customRender: "phone" },
                 width: 120,
             },
             {
                 title: "系列",
-                scopedSlots: {customRender: "phone"},
+                scopedSlots: { customRender: "phone" },
                 width: 120,
             },
             {
                 title: "工艺",
-                scopedSlots: {customRender: "phone"},
+                scopedSlots: { customRender: "phone" },
                 width: 120,
             },
             {
                 title: "品牌",
-                scopedSlots: {customRender: "phone"},
+                scopedSlots: { customRender: "phone" },
                 width: 120,
             },
             {
                 title: "分类",
-                scopedSlots: {customRender: "phone"},
+                scopedSlots: { customRender: "phone" },
                 width: 120,
             },
             {
                 title: "操作",
                 width: "190px",
                 fixed: "right",
-                scopedSlots: {customRender: "operation"},
+                scopedSlots: { customRender: "operation" },
             },
         ];
         columns = columns.map((item) => {
-            return {...item, align: "center"};
+            return { ...item, align: "center" };
         });
 
         return {
@@ -165,29 +132,37 @@ export default {
             // new
             selectedRowKeys: [],
             deleteOpen: false,
-            addUserList:{},
+            addUserList: {},
             addCouml: [
                 {
                     title: "样品名",
-                    scopedSlots: {customRender: "phone"},
+                    dataIndex: "name",
+                    scopedSlots: { customRender: "name" },
                     width: 120,
                 },
                 {
                     title: "型号",
-                    scopedSlots: {customRender: "phone"},
+                    dataIndex: "model",
+                    scopedSlots: { customRender: "model" },
                     width: 120,
                 },
                 {
                     title: "系列",
-                    scopedSlots: {customRender: "phone"},
+                    dataIndex: "series",
+                    scopedSlots: { customRender: "series" },
                     width: 120,
                 },
                 {
                     title: "品牌",
-                    scopedSlots: {customRender: "phone"},
+                    dataIndex: "brand",
+                    scopedSlots: { customRender: "brand" },
                     width: 120,
                 },
-            ]
+            ],
+            pageNo: 1,
+            pageSize: 10,
+            searchValueSample: "",
+            addtotalCount: 1,
         }
     },
 
@@ -204,10 +179,53 @@ export default {
             this.getSysUserList();
         },
         //删除弹出
-        showDelModal(){
+        showDelModal() {
             this.deleteOpen = true;
         },
-    }
+
+        //点击样品列表添加
+        addUserModel() {
+            this.addUser = true;
+            this.sampleInfo();
+        },
+
+        onSelectChangeSample(selectedRowKeys) {
+            this.selectedRowKeys = selectedRowKeys;
+        },
+
+        //样品列表
+        async sampleInfo() {
+            let res = await API.sampleList(this.pageNo, this.pageSize, this.searchValueSample);
+            this.addDataSource = res.data.records;
+            this.addtotalCount = res.data.total
+        },
+
+        //新增客户样品
+        async addSampleRelation() {
+            if (this.selectedRowKeys.length <= 0) {
+                this.$message.warning("请选择要删除条目", 1);
+                return;
+            }
+            let res = await API.sampleRelation({sampleIds:this.selectedRowKeys})
+            if (res.errorCode == 0) {
+                this.$message.success("添加成功", 0.5);
+                this.addUser = false;
+                this.samplelList();
+            }
+        },
+
+        //客户样品列表
+        async samplelList() {
+            let id = this.$route.query.id
+            let res = await API.selectCustomerSamplelList(this.pageNo, this.pageSize, id);
+            this.dataSource = res.data.records;
+            this.totalCount = res.data.total
+        },
+
+    },
+    mounted() {
+        this.samplelList();
+    },
 }
 </script>
 
@@ -218,11 +236,11 @@ export default {
     align-items: center;
 }
 
-.headerSearch{
+.headerSearch {
     display: flex;
 }
 
-.manageAll{
+.manageAll {
     display: flex;
     justify-content: flex-end;
     align-items: center;
