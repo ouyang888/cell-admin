@@ -1,5 +1,5 @@
 <template>
-    <div class="containter" style="overflow: hidden">
+    <div class="containter">
         <div class="content" ref="content">
             <div class="content-search">
                 <div class="manageHeader">
@@ -51,43 +51,44 @@
                         <a-date-picker style="width: 100%;" />
                     </div>
 
-                    <div class="flex j-c a-c" style="margin-top: 20px">
-                        <div style="width: 120px">甲方单位：</div>
-                        <a-input
-                            v-model="addUserList.userName"
-                            placeholder="公司"
-                        ></a-input>
-                    </div>
-                    <div class="flex j-c a-c" style="margin-top: 20px">
-                        <div style="width: 120px">甲方项目负责人：</div>
-                        <a-input
-                            v-model="addUserList.userName"
-                            placeholder=""
-                        ></a-input>
-                    </div>
-                    <div class="flex j-c a-c" style="margin-top: 20px">
-                        <div style="width: 120px">乙方单位：</div>
-                        <a-input
-                            v-model="addUserList.userName"
-                            placeholder="公司"
-                        ></a-input>
-                    </div>
-                    <div class="flex j-c a-c" style="margin-top: 20px">
-                        <div style="width: 120px">乙方项目负责人：</div>
-                        <a-input
-                            v-model="addUserList.userName"
-                            placeholder=""
-                        ></a-input>
-                    </div>
-
-                    <div class="flex j-c a-c" style="margin-top: 20px">
-                        <div style="width: 120px">订单总金额：</div>
-                        <a-input
-                            v-model="addUserList.userName"
-                            placeholder="123"
-                            addon-after="元"
-                        ></a-input>
-                    </div>
+                    <template v-if="this.$route.query.reportType == 1">
+                        <div class="flex j-c a-c" style="margin-top: 20px">
+                            <div style="width: 120px">甲方单位：</div>
+                            <a-input
+                                v-model="addUserList.userName"
+                                placeholder="公司"
+                            ></a-input>
+                        </div>
+                        <div class="flex j-c a-c" style="margin-top: 20px">
+                            <div style="width: 120px">甲方项目负责人：</div>
+                            <a-input
+                                v-model="addUserList.userName"
+                                placeholder=""
+                            ></a-input>
+                        </div>
+                        <div class="flex j-c a-c" style="margin-top: 20px">
+                            <div style="width: 120px">乙方单位：</div>
+                            <a-input
+                                v-model="addUserList.userName"
+                                placeholder="公司"
+                            ></a-input>
+                        </div>
+                        <div class="flex j-c a-c" style="margin-top: 20px">
+                            <div style="width: 120px">乙方项目负责人：</div>
+                            <a-input
+                                v-model="addUserList.userName"
+                                placeholder=""
+                            ></a-input>
+                        </div>
+                        <div class="flex j-c a-c" style="margin-top: 20px">
+                            <div style="width: 120px">订单总金额：</div>
+                            <a-input
+                                v-model="addUserList.userName"
+                                placeholder="123"
+                                addon-after="元"
+                            ></a-input>
+                        </div>
+                    </template>
 
                     <div class="flex j-c a-c" style="margin-top: 20px">
                         <div style="width: 100px">项目名称：</div>
@@ -232,10 +233,15 @@
 </template>
 
 <script>
+    import API from "../../../service/api";
 export default {
     name: "addReporting",
     data(){
+
         return{
+            // 1:工程单，2：零售单
+
+            value1:"",
             addDetailShow: false,
             value: '',
             addUserList: {},
@@ -258,6 +264,17 @@ export default {
             ],
             modelMsgSend: [],
             fileList: [],
+
+        }
+    },
+    mounted() {
+        this.getDetail()
+    },
+    methods:{
+        //获取详情
+        async getDetail(){
+           let res =  await API.filingSheetDetail(this.$route.query.id)
+            console.log(res);
         }
     }
 }

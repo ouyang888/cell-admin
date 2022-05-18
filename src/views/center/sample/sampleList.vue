@@ -80,7 +80,7 @@
             </div>
             <div class="flex j-c a-c" style="margin-top: 10px">
                 <div style="width: 100px">品牌名称：</div>
-                <a-select ref="select" default-value="0" @change="changeBrandId"
+                <a-select v-model="addUserList.brandId" ref="select" default-value="0" @change="changeBrandId"
                     style="width: 100%;margin-right: 10px;">
                     <a-select-option value="0">请选择
                     </a-select-option>
@@ -90,7 +90,7 @@
             </div>
             <div class="flex j-c a-c" style="margin-top: 10px">
                 <div style="width: 100px">样品分类：</div>
-                <a-select ref="select" default-value="0" @change="changeSampleTypeId"
+                <a-select v-model="addUserList.sampleTypeId" ref="select" default-value="0" @change="changeSampleTypeId"
                     style="width: 100%;margin-right: 10px;">
                     <a-select-option value="0">请选择
                     </a-select-option>
@@ -326,12 +326,17 @@ export default {
         async sampleInfo() {
             let res = await API.sampleList(this.pageNo, this.pageSize, this.searchValue);
             this.dataSource = res.data.records;
-            this.totalCount = res.data.total
+            this.totalCount = res.data.total;
         },
         //编辑样品
-        editSample(item) {
+        async editSample(item) {
+            let res = await API.sampleDetail(item.id);
+
             this.addUser = true
-            this.addUserList = item
+            this.addUserList = res.data
+            console.log(res.data);
+            console.log(this.getupload);
+            // this.rotateImgList = res.data.rotateImgList
         },
         //添加样品
         showAddSample() {
@@ -424,6 +429,7 @@ export default {
         },
 
         changeRotateImgs({ fileList }) {
+            console.log(fileList,'1111')
             this.rotateImgList = fileList;
             if (fileList[fileList.length - 1].response) {
                 this.upImgUrl = this.rotateImgList.map((item) => {

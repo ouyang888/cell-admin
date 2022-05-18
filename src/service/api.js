@@ -104,6 +104,11 @@ export default class ApiService {
     return request.post(api.adminUrl + `manager/sample/delete`, data, { headers: { "token": token } });
   }
 
+  // 获取样品详情
+    static sampleDetail(id) {
+        return request.get(api.adminUrl + `manager/sample/get?id=${id}`, "", { headers: { "token": token } });
+    }
+
 
 
   // 品牌下拉列表
@@ -174,8 +179,8 @@ export default class ApiService {
   }
 
   //报备单管理 获取报备单详情
-  static filingSheetDetail(data) {
-    return request.post(api.adminUrl + `manager/report/get`, data, { headers: { "token": token } });
+  static filingSheetDetail(id) {
+    return request.get(api.adminUrl + `manager/report/get?id=${id}`, "", { headers: { "token": token } });
   }
 
 
