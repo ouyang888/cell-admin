@@ -394,6 +394,7 @@
                     API.salesUpdateEdit(data).then(res => {
                         if (res.errorCode == "0") {
                             this.$message.success("保存成功", 1);
+                            this.$router.push({path: '/center/saleList'});
                         }
                     })
                 })
