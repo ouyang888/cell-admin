@@ -22,32 +22,25 @@
             <div class="content-details">
                 <div class="manageAll">
                     <a-button type="primary">导出</a-button>
-                    <a-button type="danger" style="margin-left: 10px;" @click="showDelModal">批量删除</a-button>
+                    <a-button type="danger" style="margin-left: 10px;" @click="delMoreHandle">批量删除</a-button>
                 </div>
-                <a-table rowKey="id" :pagination="false" :data-source="dataSource" :columns="columns"
-                         :loading="isloading" :row-selection="{ selectedRowKeys: selectedRowKeys }"
-                         :scroll="{ y: contentHeight - 369 }">
-                    <template slot="name" slot-scope="text, record">
-                        {{ record.key }}
-                        <div class="overflow-one" style="max-width: 250px"></div>
-                    </template>
-                    <template slot="userName" style="min-width: 100px" slot-scope="userName">
-                        {{ userName }}
-                    </template>
-                    <template slot="phone" slot-scope="phone">
-                        {{ phone }}
-                    </template>
-                    <template slot="role" slot-scope="role">
-                        {{ role }}
-                    </template>
-                    <template slot="operation">
+
+                <a-table rowKey="id"
+                         :pagination="false"
+                         :data-source="dataSource"
+                         :columns="columns"
+                         :loading="isloading" :row-selection="{ selectedRowKeys: selectedRowKeys , onChange: onSelectChange}"
+                         class="table-list"
+                         >
+
+                    <template slot="operation" slot-scope="progress,lineData">
                         <div class="flex j-ey a-c">
-                            <a>审核</a>
-                            <a>驳回原因</a>
-                            <a>编辑</a>
+                            <a v-if="lineData.state == 0" @click="showModal(lineData.id,'examineModal')">审核</a>
+                            <a v-if="lineData.state == 2" @click="showModal(lineData.id,'rejectModal')">驳回原因</a>
+                            <a @click="goEdit(lineData)">编辑</a>
                             <span>|</span>
-                            <a style="color:red">删除</a>
-                            <a>查看模板消息</a>
+                            <a @click="showModal(lineData.id,'delModal')" style="color:red">删除</a>
+                            <a @click="showModal(lineData.id,'sendModal')">查看模板消息</a>
                         </div>
                     </template>
                 </a-table>
@@ -60,30 +53,30 @@
         </div>
 
         <!--   删除     -->
-        <a-modal v-model="deleteOpen" title="确认删除">
+        <a-modal v-model="delModal" title="确认删除">
             <p>此操作不可逆，请确认</p>
         </a-modal>
 
         <!--   驳回    -->
-        <a-modal v-model="deleteOpen" title="驳回原因">
+        <a-modal v-model="rejectModal" title="驳回原因">
             <p>工程重复了</p>
         </a-modal>
 
         <!--   审核    -->
-        <a-modal v-model="deleteOpen" title="请审核">
+        <a-modal v-model="examineModal" @ok="examineHandle" title="请审核">
             <div class="flex j-c a-c" style="margin-bottom: 20px">
-                <a-radio-group v-model="value" name="radioGroup" style="width: 100%;">
+                <a-radio-group v-model="examineForm.state" name="radioGroup" style="width: 100%;">
                     <a-radio value="1">审核通过</a-radio>
                     <a-radio value="2">审核驳回</a-radio>
                 </a-radio-group>
             </div>
             <div>
-                <a-textarea placeholder="请输入100字以内驳回原因" allow-clear :autosize="{ minRows: 3 }"/>
+                <a-textarea v-model="examineForm.reason" placeholder="请输入100字以内驳回原因" allow-clear :autosize="{ minRows: 3 }"/>
             </div>
         </a-modal>
 
         <!--   模板推送   -->
-        <a-modal v-model="deleteOpen" title="模板消息推送状态">
+        <a-modal v-model="sendModal" title="模板消息推送状态">
             <a-table :columns="modelColumns" :data-source="modelMsgSend">
                 <a slot="name" slot-scope="text">{{ text }}</a>
             </a-table>
@@ -169,13 +162,12 @@
                     title: "销售单状态",
                     dataIndex: "stateStr",
                     width: "120px",
-                    ellipsis: true,
                     scopedSlots: {customRender: "stateStr"},
                 },
                 {
                     title: "操作",
                     width: "300px",
-                    fixed: "right",
+                    dataIndex: "operation",
                     scopedSlots: {customRender: "operation"},
                 },
             ];
@@ -183,6 +175,7 @@
                 return {...item, align: "center"};
             });
             return {
+                id:null,
                 select1: "",
                 select2: "",
                 selectList1:[
@@ -204,27 +197,22 @@
                     nature:"",
                     state:""
                 },
-
-
-
-                state:"",
-                nature:"",
-
-                searchdata: {},
+                examineForm:{},
+                examineModal: false,
+                delModal: false,
+                rejectModal: false,
+                sendModal: false,
+                isDelMore:false,
                 totalCount: 0,
                 locale: zhCN, //中文
-                value: '',
-                addUser: false,
+                state:"",
+                nature:"",
+                searchdata: {},
                 isloading: false,
-                contentHeight: 0,
-                dataSource: [],
-                count: 2,
                 columns: columns,
-                // new
+                dataSource: [],
                 selectedRowKeys: [],
-                deleteOpen: false,
-                addUserList: {},
-                fileList: [],
+
                 modelMsgSend: [],
                 modelColumns: [
                     {
@@ -242,6 +230,58 @@
         },
 
         methods: {
+            // 弹窗
+            showModal(id,modal) {
+                this[modal] = true;
+                this.id = id;
+            },
+
+            // 确认审核
+            async examineHandle(){
+                this.examineForm.id = this.id
+                await API.salesUpdate(this.examineForm)
+                this.salesInfo();
+                this.examineModal = false;
+            },
+            // 选择报备单
+            onSelectChange(selectedRowKeys) {
+                this.selectedRowKeys = selectedRowKeys;
+            },
+
+            // 批量删除校检
+            delMoreHandle(){
+                if (this.selectedRowKeys.length <= 0) {
+                    this.$message.warning("请选择要删除报备单", 1);
+                    return
+                }
+                this.isDelMore = true;
+                this.delModal = true;
+            },
+
+            // 确认删除
+            async delHandle(){
+                let res =  await API.salesDelete(this.isDelMore ? this.selectedRowKeys : [this.id])
+                if (res.errorCode == 0) {
+                    this.$message.success("删除成功", 1);
+                    this.selectedRowKeys = [];
+                    this.getList();
+                    this.delModal = false
+                }
+            },
+
+            // 编辑
+            goEdit(data){
+                let {id,reportType} = {...data}
+                this.$router.push({ path: "/center/editSale", query: {id,reportType} });
+            },
+
+
+            // 获取列表数据
+            async salesInfo() {
+                let res = await API.salesList(this.searchForm.pageNo, this.searchForm.pageSize, this.searchForm.searchText,this.searchForm.nature,this.searchForm.state);
+                this.dataSource = res.data.records;
+                this.totalCount = res.data.total
+            },
             // 分页改变
             changePage(page) {
                 this.searchdata.num = page;
@@ -252,16 +292,6 @@
                 this.searchdata.num = 1;
                 this.searchdata.size = size;
                 this.getSysUserList();
-            },
-            //删除弹出
-            showDelModal() {
-                this.deleteOpen = true;
-            },
-
-            async salesInfo() {
-                let res = await API.salesList(this.searchForm.pageNo, this.searchForm.pageSize, this.searchForm.searchText,this.searchForm.nature,this.searchForm.state);
-                this.dataSource = res.data.records;
-                this.totalCount = res.data.total
             },
         }
     }
@@ -292,5 +322,8 @@
         .pagination {
             margin-right: 11px;
         }
+    }
+    .table-list{
+        overflow-x: auto;
     }
 </style>

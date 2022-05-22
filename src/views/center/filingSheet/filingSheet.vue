@@ -254,7 +254,7 @@ export default {
         // 批量删除校检
         delMoreHandle(){
             if (this.selectedRowKeys.length <= 0) {
-                this.$message.warning("请选择要删除条目", 1);
+                this.$message.warning("请选择要删除报备单", 1);
                 return
             }
             this.isDelMore = true;
